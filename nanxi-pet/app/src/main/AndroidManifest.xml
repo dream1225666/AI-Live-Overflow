@@ -15,7 +15,8 @@
 
     <application
         android:allowBackup="false"
-        android:label="南兮"
+        android:icon="@mipmap/ic_launcher"
+        android:label="墨墨"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         android:usesCleartextTraffic="true"

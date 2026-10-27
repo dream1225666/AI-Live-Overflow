@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         root.addView(TextView(this).apply {
-            text = "南兮"
+            text = "墨墨"
             textSize = 26f
             gravity = Gravity.CENTER
         })
         root.addView(TextView(this).apply {
-            text = "悬浮在你屏幕上的那一小块"
+            text = "从对话框里爬出来的那一小块"
             textSize = 13f
             gravity = Gravity.CENTER
             setPadding(0, dp(6), 0, dp(28))
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         ).apply { bottomMargin = dp(12) })
 
         btnToggle = Button(this).apply {
-            text = "② 让南兮出来"
+            text = "② 让墨墨出来"
             setOnClickListener { toggle() }
         }
         root.addView(btnToggle, LinearLayout.LayoutParams(
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             textSize = 12f
             gravity = Gravity.CENTER
             setPadding(0, dp(28), 0, 0)
-            text = "长按她 = 害羞　连戳 = 生气　双击 = 说话\n" +
+            text = "长按 = 害羞　连戳 = 生气　双击 = 说话\n" +
                 "拖到屏幕边缘会贴上去探头"
         })
 
@@ -115,10 +115,10 @@ class MainActivity : AppCompatActivity() {
         val state = ClawdHost.getState(this)
         if (state.contains("\"visible\":true")) {
             stopService(i)
-            btnToggle.text = "② 让南兮出来"
+            btnToggle.text = "② 让墨墨出来"
         } else {
             ContextCompat.startForegroundService(this, i)
-            btnToggle.text = "② 让她回去"
+            btnToggle.text = "② 让墨墨回去"
         }
     }
 

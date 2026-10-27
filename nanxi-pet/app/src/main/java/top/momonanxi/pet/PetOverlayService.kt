@@ -60,7 +60,7 @@ class PetOverlayService : Service() {
     private fun startForegroundNow() {
         val nm = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ch = NotificationChannel(CHANNEL, "南兮", NotificationManager.IMPORTANCE_LOW)
+            val ch = NotificationChannel(CHANNEL, "墨墨", NotificationManager.IMPORTANCE_LOW)
             ch.setShowBadge(false)
             nm.createNotificationChannel(ch)
         }
@@ -69,9 +69,9 @@ class PetOverlayService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val n: Notification = Notification.Builder(this, CHANNEL)
-            .setContentTitle("南兮在你屏幕上")
+            .setContentTitle("墨墨在你屏幕上")
             .setContentText("点一下回来看设置")
-            .setSmallIcon(android.R.drawable.ic_menu_more)
+            .setSmallIcon(R.drawable.ic_stat_pet)
             .setContentIntent(pi)
             .setOngoing(true)
             .build()
@@ -169,13 +169,16 @@ class PetOverlayService : Service() {
     private val remoteLoop = object : Runnable {
         override fun run() {
             if (!running) return
+            val self = this
             io.execute {
+                var ok = false
                 val txt = try {
                     val c = URL("$BACKEND/poll?since=$lastSeq").openConnection() as HttpURLConnection
-                    c.connectTimeout = 2500
-                    c.readTimeout = 2500
+                    c.connectTimeout = 2000
+                    c.readTimeout = 2000
                     val s = c.inputStream.bufferedReader().use { it.readText() }
                     c.disconnect()
+                    ok = true
                     s
                 } catch (_: Throwable) {
                     null
@@ -183,8 +186,8 @@ class PetOverlayService : Service() {
                 if (txt != null && txt.isNotBlank() && txt != "{}" && txt != "[]") {
                     ui.post { applyRemote(txt) }
                 }
+                ui.postDelayed(self, if (ok) 2000L else 6000L)
             }
-            ui.postDelayed(this, 5000)
         }
     }
 
