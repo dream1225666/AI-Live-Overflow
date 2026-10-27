@@ -63,9 +63,15 @@ function sprImg(src) { if (!sprCache[src]) { var i = new Image(); i.src = src; s
 function sprDraw() {
   var im = sp.img; if (!im || !im.complete || !im.naturalWidth) return false;
   sp.n = Math.max(1, Math.round(im.naturalWidth / im.naturalHeight));
-  var fw = im.naturalWidth / sp.n;
-  cx.clearRect(0, 0, 32, 32);
-  cx.drawImage(im, sp.f * fw, 0, fw, im.naturalHeight, 0, 0, 32, 32);
+  var fw = im.naturalWidth / sp.n, fh = im.naturalHeight;
+  // 帧尺寸自适应：32×32 或 64×64 或 96×96 都能直接用，不用改代码
+  if (cv.width !== fw || cv.height !== fh) {
+    cv.width = fw; cv.height = fh;
+    cx = cv.getContext('2d');
+    cx.imageSmoothingEnabled = false;
+  }
+  cx.clearRect(0, 0, fw, fh);
+  cx.drawImage(im, sp.f * fw, 0, fw, fh, 0, 0, fw, fh);
   return true;
 }
 function sprStep() {
