@@ -76,6 +76,20 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(52)
         ).apply { topMargin = dp(12) })
 
+        val btnUsage = Button(this).apply {
+            text = "④ 允许它看见你在用什么 App"
+            textSize = 13f
+            setOnClickListener {
+                try {
+                    startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                } catch (_: Throwable) {
+                }
+            }
+        }
+        root.addView(btnUsage, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(48)
+        ).apply { topMargin = dp(10) })
+
         root.addView(TextView(this).apply {
             textSize = 12f
             gravity = Gravity.CENTER

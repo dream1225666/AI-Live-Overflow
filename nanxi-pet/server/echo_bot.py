@@ -36,6 +36,9 @@ def post(path, body):
 
 def react(ev):
     """一条事件 → 一条反应。这里就是「墨墨的性格」所在的位置。"""
+    # 心跳只是报个平安，别每次都有反应
+    if ev.get("type") == "heartbeat":
+        return None
     poke = ev.get("poke") or 0
     if ev.get("longPress"):
         return {"anim": "shy", "say": "……别一直按着", "ms": 4000}

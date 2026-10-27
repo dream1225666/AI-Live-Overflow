@@ -1,11 +1,15 @@
 package top.momonanxi.pet
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.usage.UsageStatsManager
 import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -38,6 +42,7 @@ class PetOverlayService : Service() {
         running = true
         io.execute { loadPages() }
         ui.post(eventLoop)
+        ui.postDelayed(senseLoop, 3000)
         ui.postDelayed(remoteLoop, 4000)
     }
 
@@ -121,6 +126,81 @@ class PetOverlayService : Service() {
         null
     }
 
+    // ---------- 感知：电量 / 时段 / 前台 app ----------
+
+    /** 每次上报都带上这几样，墨墨才知道「现在几点了、还有电吗、她在用什么」 */
+    private fun sense(): JSONObject {
+        val o = JSONObject()
+        try {
+            val bm = getSystemService(BatteryManager::class.java)
+            o.put("battery", bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY))
+            val it = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val st = it?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
+            o.put("charging", st == BatteryManager.BATTERY_STATUS_CHARGING ||
+                st == BatteryManager.BATTERY_STATUS_FULL)
+        } catch (_: Throwable) {
+        }
+        try {
+            val cal = java.util.Calendar.getInstance()
+            o.put("hour", cal.get(java.util.Calendar.HOUR_OF_DAY))
+            o.put("weekend", cal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.SATURDAY ||
+                cal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.SUNDAY)
+        } catch (_: Throwable) {
+        }
+        try {
+            o.put("app", lastApp)   // 用缓存：真实查询在 senseLoop 里做，别拖慢事件循环
+        } catch (_: Throwable) {
+        }
+        return o
+    }
+
+    /**
+     * 前台 app。需要在系统设置里手动开「使用情况访问」权限，没开就返回 null，
+     * 不影响其它功能——墨墨会照常收到触摸事件，只是不知道你在用什么。
+     */
+    @SuppressLint("MissingPermission")
+    private fun foregroundApp(): String? = try {
+        val usm = getSystemService(UsageStatsManager::class.java)
+        val end = System.currentTimeMillis()
+        val stats = usm?.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, end - 120_000L, end)
+        if (stats.isNullOrEmpty()) null
+        else stats.maxByOrNull { it.lastTimeUsed }?.packageName
+    } catch (_: Throwable) {
+        null
+    }
+
+    private var lastApp = ""
+    private var lastBeat = 0L
+
+    /** 每 15 秒瞄一眼，换了 app 立刻报，没换就 60 秒报一次心跳 */
+    private val senseLoop = object : Runnable {
+        override fun run() {
+            if (!running) return
+            val self = this
+            io.execute {
+                try {
+                    val fresh = foregroundApp()
+                    if (!fresh.isNullOrEmpty()) lastApp = fresh
+                    val s = sense()
+                    val app = s.optString("app", "")
+                    val changed = app.isNotEmpty() && app != lastApp
+                    val now = System.currentTimeMillis()
+                    if (changed || now - lastBeat > 60_000L) {
+                        lastApp = if (app.isNotEmpty()) app else lastApp
+                        lastBeat = now
+                        report(
+                            "event",
+                            s.put("type", if (changed) "app_switch" else "heartbeat")
+                                .put("ts", now)
+                        )
+                    }
+                } catch (_: Throwable) {
+                }
+                ui.postDelayed(self, 15_000L)
+            }
+        }
+    }
+
     // ---------- 手势事件 → 后端 ----------
 
     private val eventLoop = object : Runnable {
@@ -135,8 +215,15 @@ class PetOverlayService : Service() {
                 val subs = j.optJSONArray("submits")
                 val hasSub = subs != null && subs.length() > 0
 
+                // 双击 = 想跟它说话：把气泡和键盘弹出来
+                if (dbl) {
+                    ClawdHost.showBubble(this@PetOverlayService)
+                    ClawdHost.setInputMode(this@PetOverlayService, true)
+                }
+
                 if (poke > 0 || dbl || lng || dragEnd.isNotEmpty() || hasSub) {
-                    val body = JSONObject()
+                    val body = sense()
+                        .put("type", "event")
                         .put("poke", poke)
                         .put("doubleTap", dbl)
                         .put("longPress", lng)
