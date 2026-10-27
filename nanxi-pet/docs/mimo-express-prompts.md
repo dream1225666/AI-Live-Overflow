@@ -104,7 +104,7 @@ background, nothing else. No text, no shadow, no glow.
 
 ## 5 · shy　害羞
 
-眼睛**完全不动**，只有瞳孔偏向下方，嘴抿成一条细短的线。**不画腮红。** 头不动。
+眼睛**完全不动**，只有瞳孔偏向下方；两侧脸颊各加**2~3 道短斜线腮红**（不是实心块）；嘴抿成一条细短的线。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
@@ -113,11 +113,13 @@ Head faces straight forward, no tilt, no turning away.
 
 Change only the expression: shy. The eyes must stay EXACTLY as they are in the reference — same
 narrow shape, same eyelid height, same amount of visible iris, same white of the eye. Do not close
-them further, do not blur them, do not merge them into a flat shape. The only change is the pupils,
-which are shifted to look down and to one side, as if he cannot meet your eyes.
-His mouth becomes a single short, thin, slightly tense horizontal line.
-Do not add blush, do not add red or pink patches on the cheeks, do not add any color to the face
-beyond what is already in the reference. Keep his original narrow eye shape.
+them, do not blur them, do not merge them into a flat shape. The only change is the pupils, which
+shift to look down and to one side, as if he cannot meet your eyes.
+On each cheek add a light blush made of two or three SHORT DIAGONAL STROKES in a pale warm pink,
+placed high on the cheekbone just under the eye. They must read as thin separate pixel strokes —
+NOT a solid filled circle, NOT a large patch, and they must not cover or blur the face outline.
+His mouth becomes a single short thin slightly tense horizontal line. Keep his original narrow eye
+shape.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -245,7 +247,7 @@ background, nothing else. No text, no shadow, no glow.
 | `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
 | `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
 | `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
-| `shy` | **完全不动**，只有瞳孔偏向下方 | 细短的一条抿线 | 保留 |
+| `shy` | **完全不动**，只有瞳孔偏向下方 | 细短的一条抿线 | 保留（颊上 2~3 道斜线腮红） |
 | `think` | 细长眼，瞳孔偏上 | 平线 | 保留 |
 | `tired` | 细长眼压到最沉 | 一条线 | 保留 |
 | `surprise` | 细长眼**睁大**，虹膜露出更多 | 小圆微张 | 保留（优先） |
