@@ -322,17 +322,26 @@ background, nothing else. No text, no shadow, no glow.
 
 ### drag · 被拎起来
 
-**目前最明显的缺口**——现在拖他的时候身体还是站着的，像拽一块纸板。
+**目前最明显的缺口**：现在拖他的时候身体还站着，像拽一块纸板。
+
+⚠️ **别写「被谁拎着」**。写 `lifted by the collar` 这类描述，AI 会把施力的手一起画进来。
+拖着桌子上的他时，那只手是你自己的，画面里绝不能有。**只描述他现在的样子：悬空、手脚垂下。**
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
 Head faces straight forward, no tilt.
 
-Change only the pose: he is being lifted off the ground, hanging from the scruff of his collar.
-His body hangs straight down and slightly limp, both arms dangling loosely at his sides, both legs
-hanging with the feet pointing down. The hem of his top is lifted a little by the movement.
-His expression stays the same neutral half-lidded look — mildly inconvenienced, not scared.
+Change only the pose: he is dangling in mid-air. His body hangs straight down and slightly limp,
+both arms dangling loosely at his sides, both legs hanging with the feet pointing down.
+The hem of his top is lifted a little, and his hair falls downward a touch.
+
+IMPORTANT — do not draw any hand, arm, hook, rope or object holding him up. Nothing may appear
+above his head or touching him. He hangs in empty space on his own; whoever is holding him is
+outside the frame and invisible.
+Keep his body proportions exactly as in the reference — do not stretch, elongate, thin out or
+squash him. The hair keeps the same shape as the reference.
+Expression stays the same neutral half-lidded look — mildly inconvenienced, not scared.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -346,10 +355,14 @@ No text, no shadow, no glow, no motion lines.
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
 
-Change only the pose: he is being thrown through the air sideways. His whole body is tilted about
-30 degrees away from vertical, arms and legs trailing behind the direction of the throw, hair
-pushed back a little. Expression: eyes wider than usual, mouth slightly open, caught off guard.
-Do not add motion lines or speed streaks — they turn into noise at this size.
+Change only the pose: he is tumbling through the air sideways. His whole body is tilted about
+30 degrees away from vertical, arms and legs trailing behind him in the direction he came from,
+his hair pushed slightly against the motion. Expression: eyes a little wider than usual, mouth
+slightly open, off balance.
+
+IMPORTANT — do not draw any hand, arm, foot or object of any kind besides him. Nothing else may
+appear in the frame. Do not add motion lines or speed streaks; they turn into noise at this size.
+Keep his body proportions exactly as in the reference.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
