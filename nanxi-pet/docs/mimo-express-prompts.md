@@ -260,6 +260,7 @@ background, nothing else. No text, no shadow, no glow.
 | 表情 | 眼睛 | 嘴 | 是否改变眼型 |
 |---|---|---|---|
 | `happy` | 细长眼弯成上弧 | 明显微笑弧 | 保留 |
+| `poke` | **两段折线 `><`**（向内收） | 小上扬弧 | 改成符号（用户指定） |
 | `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
 | `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
 | `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
@@ -299,7 +300,7 @@ background, nothing else. No text, no shadow, no glow.
 | `drag` **被拎起来** | **现在拖他的时候还是站着的**，像拽一块纸板。这是目前最明显的缺口 | 1 |
 | `fling` **被甩飞** | 甩出去要有姿态，不能平移 | 2 |
 | `wake` **醒来** | 从睡着切到任何状态，没有过渡就是硬切 | 1 |
-| `confused` **被戳的反应** | 最基础的交互反馈。反应要**轻**——挑眉看一眼就够，别缩肩睁眼 | 1 |
+| `poke` **被戳** | 最基础的交互反馈。用 **`><` 眼**——有点受用又不好意思，比挑眉疑惑更有互动感 | 1 |
 
 ### 有趣但不急的
 
@@ -324,16 +325,15 @@ background, nothing else. No text, no shadow, no glow.
 
 ## 建议的生成顺序
 
-**第一批（4 张）**：`drag` → `fling` → `wake` → `confused`
+**第一批（4 张）**：`drag` → `fling` → `wake` → `poke`
 身体动作先补齐，这比多十种表情更能让人觉得「这是个活物」。
 
 **第二批（4 张）**：`happy` → `annoyed` → `shy` → `sad`
 常用的四种情绪。
 
-**第三批（看心情）**：`angry`（带青筋）→ `think` → `tired` → `dizzy` → `surprise`
+**第三批（看心情）**：`confused` → `angry`（带青筋）→ `think` → `tired` → `dizzy` → `surprise`
 
 `surprise` 留到最后，只用于**真的被吓到**的场合（突然的通知、闹钟、你猛地凑近）。
-日常「戳一下」用 `confused`，别用惊讶——反应过头就不像他了。
 
 ---
 
@@ -415,10 +415,32 @@ do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid mage
 background, nothing else. No text, no shadow, no glow.
 ```
 
-### confused · 疑惑（兼当 poke 用）
+### poke · 被戳（>< 眼）
 
-**被戳的反应是「疑惑」，不是「惊讶」。** 惊讶太夸张——他不会因为被戳一下就把眼睛睁大、肩膀缩起来。
-他就是抬一下眼皮，看你一眼，意思是你干嘛。身体完全不动。
+被戳时的反应是**有点受用又不好意思**，不是疑惑也不是惊讶。眼睛挤成 `><`，是动漫里最直白的「喜欢」。
+身体只缩一下，不许弹开。
+
+```
+Same character as the reference image — same face shape, same messy black side-parted hair,
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
+Head faces straight forward, no tilt.
+
+Change only the expression: he is being poked and secretly enjoys it — flustered but pleased.
+Both eyes are squeezed shut into two short angled strokes: an inward-pointing ">" on the left and
+"<" on the right, forming the classic >< face. Draw them as pixel strokes, NOT as typed text
+characters. His mouth is a small soft upward curve. His shoulders are pulled up a little, as if
+ticklish — but he does not jump back or lean away.
+
+Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
+no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
+do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
+background, nothing else. No text, no shadow, no glow.
+```
+
+### confused · 疑惑（另做，不是被戳用）
+
+被戳用上面那张。这张留给**你说傻话**的时候——挑眉看你一眼，意思是「你在讲什么」。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
