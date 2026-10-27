@@ -26,6 +26,7 @@ EVENTS: deque = deque(maxlen=300)
 CMDS: deque = deque(maxlen=100)
 _seq = 0
 _last: Dict[str, Any] = {}
+_save_at = 0.0
 
 
 def _load():
@@ -42,7 +43,13 @@ def _load():
         pass
 
 
-def _save():
+def _save(force: bool = False):
+    """落盘节流：最短 3 秒写一次。连戳十下不必写十次盘。"""
+    global _save_at
+    now = time.time()
+    if not force and now - _save_at < 3:
+        return
+    _save_at = now
     try:
         with open(STATE_FILE, "w", encoding="utf-8") as f:
             json.dump(
@@ -63,16 +70,20 @@ def health():
 
 @app.post("/event")
 async def event(req: Request):
-    """手机端推上来的手势 / 输入。"""
+    """手机端推上来的手势 / 输入 / 心跳。"""
     global _last
     try:
         body = await req.json()
     except Exception:
         body = {"raw": (await req.body()).decode("utf-8", "ignore")}
     body["_t"] = time.time()
-    EVENTS.append(body)
     _last = body
-    _save()
+
+    # 心跳只用来更新「最近一次听到它」的快照，不占事件队列。
+    # 否则 300 条的环形缓冲会被心跳慢慢填满，真实交互反而被挤出去。
+    if body.get("type") != "heartbeat":
+        EVENTS.append(body)
+        _save()
     return {"ok": True, "n": len(EVENTS)}
 
 

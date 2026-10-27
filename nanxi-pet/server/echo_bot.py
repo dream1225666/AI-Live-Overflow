@@ -35,11 +35,21 @@ def post(path, body):
 
 
 def react(ev):
-    """一条事件 → 一条反应。这里就是「墨墨的性格」所在的位置。"""
-    # 心跳只是报个平安，别每次都有反应
-    if ev.get("type") == "heartbeat":
+    """一条事件 → 一条反应。这里就是「墨墨的性格」所在的位置。
+
+    可用的 anim（墨墨皮肤）：idle talk blink sleep happy sad shy love angry
+    annoyed cool dizzy fake_happy drag fling
+    """
+    kind = ev.get("type")
+    # 心跳 / 换 app / 插拔充电：只是背景信息，别吭声
+    if kind in ("heartbeat", "app_switch", "charging_on", "charging_off"):
         return None
+
     poke = ev.get("poke") or 0
+    # 气泡里打的字 —— 她主动说的话
+    said = ev.get("say") or []
+    if said:
+        return {"anim": "talk", "say": "「%s」……嗯。" % said[0], "ms": 4000}
     if ev.get("longPress"):
         return {"anim": "shy", "say": "……别一直按着", "ms": 4000}
     if ev.get("doubleTap"):
@@ -47,13 +57,13 @@ def react(ev):
     if poke >= 3:
         return {"anim": "angry", "say": "戳够了没有", "ms": 4000}
     if poke == 2:
-        return {"anim": "notify", "say": "？", "ms": 2500}
+        return {"anim": "annoyed", "say": "？", "ms": 2500}
     if poke == 1:
-        return {"anim": "think", "ms": 2500}
+        return {"anim": "blink", "ms": 900}
     if ev.get("dragEnd"):
         # 拖动只是搬家。只有贴到屏幕边缘（mode 变 mini）才哼一声
         if ev.get("mode") == "mini":
-            return {"anim": "dock", "ms": 1200}
+            return {"anim": "cool", "ms": 1500}
         return None
     return None
 

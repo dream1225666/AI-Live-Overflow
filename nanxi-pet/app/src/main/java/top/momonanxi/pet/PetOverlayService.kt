@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.app.usage.UsageStatsManager
+import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
@@ -42,6 +43,7 @@ class PetOverlayService : Service() {
         running = true
         io.execute { loadPages() }
         ui.post(eventLoop)
+        registerPowerRx()
         ui.postDelayed(senseLoop, 3000)
         ui.postDelayed(remoteLoop, 4000)
     }
@@ -51,6 +53,10 @@ class PetOverlayService : Service() {
     override fun onDestroy() {
         running = false
         ui.removeCallbacksAndMessages(null)
+        try {
+            unregisterReceiver(powerRx)
+        } catch (_: Throwable) {
+        }
         try {
             ClawdHost.hide(this)
         } catch (t: Throwable) {
@@ -148,7 +154,7 @@ class PetOverlayService : Service() {
         } catch (_: Throwable) {
         }
         try {
-            o.put("app", lastApp)   // 用缓存：真实查询在 senseLoop 里做，别拖慢事件循环
+            o.put("app", curApp)   // 用缓存：真实查询在 senseLoop 里做，别拖慢事件循环
         } catch (_: Throwable) {
         }
         return o
@@ -169,10 +175,18 @@ class PetOverlayService : Service() {
         null
     }
 
-    private var lastApp = ""
+    // curApp = 当前前台应用；reportedApp = 上一次已经报过的应用
+    // 两者必须分开：之前合成一个变量，赋值顺序把比较条件自己抹平了，app_switch 从来没报出去过
+    private var curApp = ""
+    private var reportedApp = ""
     private var lastBeat = 0L
 
-    /** 每 15 秒瞄一眼，换了 app 立刻报，没换就 60 秒报一次心跳 */
+    /**
+     * 每 20 秒瞄一眼前台 app。换了才报，没换就等心跳。
+     *
+     * 心跳 10 分钟一次，不是 60 秒——每条触摸事件本身已经带电量/时段/前台 app，
+     * 心跳唯一的用处是「几小时没人理它，也还知道手机活着、电量多少」。
+     */
     private val senseLoop = object : Runnable {
         override fun run() {
             if (!running) return
@@ -180,24 +194,55 @@ class PetOverlayService : Service() {
             io.execute {
                 try {
                     val fresh = foregroundApp()
-                    if (!fresh.isNullOrEmpty()) lastApp = fresh
-                    val s = sense()
-                    val app = s.optString("app", "")
-                    val changed = app.isNotEmpty() && app != lastApp
+                    if (!fresh.isNullOrEmpty() && fresh != curApp) {
+                        curApp = fresh
+                        // 自己不算（切到设置页看墨墨的面板时不该被当成「换了个 app」）
+                        if (fresh != packageName && fresh != reportedApp) {
+                            reportedApp = fresh
+                            lastBeat = System.currentTimeMillis()
+                            report(
+                                "event",
+                                sense().put("type", "app_switch").put("ts", lastBeat)
+                            )
+                        }
+                    }
                     val now = System.currentTimeMillis()
-                    if (changed || now - lastBeat > 60_000L) {
-                        lastApp = if (app.isNotEmpty()) app else lastApp
+                    if (now - lastBeat > BEAT_MS) {
                         lastBeat = now
-                        report(
-                            "event",
-                            s.put("type", if (changed) "app_switch" else "heartbeat")
-                                .put("ts", now)
-                        )
+                        report("event", sense().put("type", "heartbeat").put("ts", now))
                     }
                 } catch (_: Throwable) {
                 }
-                ui.postDelayed(self, 15_000L)
+                ui.postDelayed(self, 20_000L)
             }
+        }
+    }
+
+    /** 插拔充电器：这是真的状态变化，比定时心跳有意义，零轮询成本 */
+    private val powerRx = object : BroadcastReceiver() {
+        override fun onReceive(ctx: android.content.Context?, intent: Intent?) {
+            val on = intent?.action == Intent.ACTION_POWER_CONNECTED
+            lastBeat = System.currentTimeMillis()
+            report(
+                "event",
+                sense().put("type", if (on) "charging_on" else "charging_off").put("ts", lastBeat)
+            )
+        }
+    }
+
+    private fun registerPowerRx() {
+        try {
+            val f = android.content.IntentFilter().apply {
+                addAction(Intent.ACTION_POWER_CONNECTED)
+                addAction(Intent.ACTION_POWER_DISCONNECTED)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(powerRx, f, android.content.Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                @Suppress("UnspecifiedRegisterReceiverFlag")
+                registerReceiver(powerRx, f)
+            }
+        } catch (_: Throwable) {
         }
     }
 
@@ -323,5 +368,8 @@ class PetOverlayService : Service() {
         private const val NOTI_ID = 1001
         const val SIZE_DP = 108
         var BACKEND = "http://8.133.183.70:8905"
+
+        /** 心跳间隔：10 分钟。真实交互已经自带全部感知字段，心跳只用来证明「还活着」 */
+        const val BEAT_MS = 10 * 60 * 1000L
     }
 }
