@@ -22,10 +22,10 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
 
-# 环形缓冲只留 40 条：墨墨是每 2 秒轮询的，永远读不到历史。
-# 40 条只用来兜住「连戳十几下 / 两秒内多件事」的密集交互，再多纯属浪费内存和落盘 IO。
-EVENTS: deque = deque(maxlen=40)
-CMDS: deque = deque(maxlen=20)
+# 环形缓冲只留 10 条：墨墨是每 2 秒轮询的，永远读不到历史。
+# 10 条足够兜住「连戳几下、两秒内多件事」，再多纯属浪费内存和落盘 IO。
+EVENTS: deque = deque(maxlen=10)
+CMDS: deque = deque(maxlen=10)
 _seq = 0
 _last: Dict[str, Any] = {}
 _save_at = 0.0

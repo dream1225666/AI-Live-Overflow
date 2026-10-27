@@ -166,7 +166,10 @@ window.bubble = function (evt, data) {
       ta.focus();
       try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
       break;
-    case 'blur': ta.blur(); break;
+    case 'blur':
+      // 只失焦不够：body 会一直挂着 mode-input，输入框的米白方块就留在屏幕上不走
+      ta.blur(); setInput(false); refreshTails(); setTimeout(reportSize, 0);
+      break;
     case 'theme':
       var s = document.documentElement.style;
       if (data.bg) s.setProperty('--bg', data.bg);

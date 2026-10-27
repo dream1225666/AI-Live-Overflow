@@ -168,7 +168,14 @@ class PetOverlayService : Service() {
 
                 // 双击 = 想跟它说话：把气泡和键盘弹出来
                 if (dbl) {
+                    // 必须先给页面发 'input' 事件：输入框靠 body.mode-input 才 display:block，
+                    // 而 setInputMode 只发 'focus'，光发 focus 时输入框根本没显示，
+                    // 结果弹出一个空窗口挂在屏幕上。
                     ClawdHost.showBubble(this@PetOverlayService)
+                    ClawdHost.evalBubble(
+                        this@PetOverlayService,
+                        "window.bubble&&window.bubble('input',{title:'跟墨墨说点什么',placeholder:'…'})"
+                    )
                     ClawdHost.setInputMode(this@PetOverlayService, true)
                 }
 
@@ -220,27 +227,49 @@ class PetOverlayService : Service() {
             if (!running) return
             val self = this
             io.execute {
-                var ok = false
-                val txt = try {
-                    val c = URL("$BACKEND/poll?since=$lastSeq").openConnection() as HttpURLConnection
-                    c.connectTimeout = 2000
-                    c.readTimeout = 2000
-                    val s = c.inputStream.bufferedReader().use { it.readText() }
-                    c.disconnect()
-                    ok = true
-                    s
-                } catch (_: Throwable) {
-                    null
+                if (!seqAligned) {
+                    // 第一轮只对齐序号，不取指令。
+                    // 否则服务重启 / 重装 APK 后 lastSeq 归零，会把服务器上留着的旧指令
+                    // 从头重播一遍，桌宠一上线就莫名其妙动一下。
+                    try {
+                        val c = URL("$BACKEND/state").openConnection() as HttpURLConnection
+                        c.connectTimeout = 2000
+                        c.readTimeout = 2000
+                        val s = c.inputStream.bufferedReader().use { it.readText() }
+                        c.disconnect()
+                        val q = JSONObject(s).optLong("seq", 0)
+                        if (q > lastSeq) lastSeq = q
+                    } catch (_: Throwable) {
+                    }
+                    seqAligned = true
+                    ui.postDelayed(self, 300L)
+                } else {
+                    var ok = false
+                    val txt = try {
+                        val c = URL("$BACKEND/poll?since=$lastSeq").openConnection() as HttpURLConnection
+                        c.connectTimeout = 2000
+                        c.readTimeout = 2000
+                        val s = c.inputStream.bufferedReader().use { it.readText() }
+                        c.disconnect()
+                        ok = true
+                        s
+                    } catch (_: Throwable) {
+                        null
+                    }
+                    if (txt != null && txt.isNotBlank() && txt != "{}" && txt != "[]") {
+                        ui.post { applyRemote(txt) }
+                    }
+                    ui.postDelayed(self, if (ok) 2000L else 6000L)
                 }
-                if (txt != null && txt.isNotBlank() && txt != "{}" && txt != "[]") {
-                    ui.post { applyRemote(txt) }
-                }
-                ui.postDelayed(self, if (ok) 2000L else 6000L)
             }
         }
     }
 
     private var lastSeq = 0L
+    /** 是否已把序号对齐到服务器当前值（第一轮不做，避免重播历史指令） */
+    private var seqAligned = false
+    /** 气泡自动收起的定时任务；连续推 say 时先撤掉上一个，避免堆叠 */
+    private var hideBubbleTask: Runnable? = null
 
     private fun applyRemote(raw: String) {
         try {
@@ -260,8 +289,28 @@ class PetOverlayService : Service() {
                 ClawdHost.evalPet(this, js)
             }
             if (say.isNotEmpty()) {
-                val safe = say.replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ")
-                ClawdHost.evalBubble(this, "window.bubble&&window.bubble('say','$safe')")
+                val safe = say.replace("\\", "\\\\").replace("'", "\\'")
+                    .replace("\n", " ").replace("\r", " ")
+                // 三步缺一不可：
+                //   ① showBubble —— 气泡窗口默认是 GONE，不显示的话注入的 JS 根本没上屏
+                //   ② reset      —— 清掉上一轮残留，否则新旧消息叠在一起
+                //   ③ say 必须传对象 {text:...}：页面里取的是 data.text，
+                //      传裸字符串会拿到 undefined → push('') → 一个空的米白卡片，
+                //      就是屏幕上那块「莫名其妙的白色块」
+                ClawdHost.showBubble(this)
+                // 窗口刚从 GONE 转 VISIBLE，等一帧再注入，免得页面还没排版就 push
+                ui.postDelayed(Runnable {
+                    if (running) {
+                        ClawdHost.evalBubble(this@PetOverlayService, "window.bubble&&window.bubble('reset')")
+                        ClawdHost.evalBubble(this@PetOverlayService, "window.bubble&&window.bubble('say',{text:'$safe'})")
+                    }
+                }, 250)
+                // 说完自动收，不然气泡会一直挂在屏幕上
+                val hold = (if (ms > 0) ms else 3300) + 1500L
+                hideBubbleTask?.let { ui.removeCallbacks(it) }
+                val task = Runnable { if (running) ClawdHost.hideBubble(this@PetOverlayService) }
+                hideBubbleTask = task
+                ui.postDelayed(task, hold)
             }
         } catch (t: Throwable) {
             Log.w(TAG, "applyRemote: $t")

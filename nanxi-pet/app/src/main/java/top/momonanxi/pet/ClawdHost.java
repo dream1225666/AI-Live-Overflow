@@ -350,7 +350,9 @@ public final class ClawdHost {
         UI.post(new Runnable() {
             @Override public void run() {
                 if (bubbleView == null) return;
-                if (inputMode) setInputModeInternal(false, false);
+                // notifyPage 必须是 true：要让页面收到 blur 把 body.mode-input 摘掉，
+                // 否则输入框的米白方块会留在下一次弹出里
+                if (inputMode) setInputModeInternal(false, true);
                 bubbleVisible = false;
                 bubbleView.setVisibility(View.GONE);
                 blp.x = -10000; blp.y = -10000;
@@ -657,8 +659,9 @@ public final class ClawdHost {
         wv.setOnTouchListener(new View.OnTouchListener() {
             @Override public boolean onTouch(View v, MotionEvent e) {
                 if (e.getActionMasked() == MotionEvent.ACTION_OUTSIDE && inputMode) {
-                    // 点到气泡外：收起输入
-                    setInputModeInternal(false, true);
+                    // 点到气泡外：收起输入并整个藏掉窗口。
+                    // 只退输入模式的话窗口还是 VISIBLE，页面里没内容就留一块空白在屏幕上。
+                    hideBubble(appCtx);
                     synchronized (LOCK) { inputClosed = true; }
                     return true;
                 }
@@ -668,7 +671,7 @@ public final class ClawdHost {
         wv.setOnKeyListener(new View.OnKeyListener() {
             @Override public boolean onKey(View v, int keyCode, KeyEvent ev) {
                 if (keyCode == KeyEvent.KEYCODE_BACK && ev.getAction() == KeyEvent.ACTION_UP && inputMode) {
-                    setInputModeInternal(false, true);
+                    hideBubble(appCtx);
                     synchronized (LOCK) { inputClosed = true; }
                     return true;
                 }
@@ -690,7 +693,7 @@ public final class ClawdHost {
         public void close() {
             UI.post(new Runnable() {
                 @Override public void run() {
-                    setInputModeInternal(false, false);
+                    hideBubble(appCtx);   // 顺带把窗口一起藏掉，别留一块空白
                     synchronized (LOCK) { inputClosed = true; }
                 }
             });
