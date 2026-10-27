@@ -111,13 +111,13 @@ Same character as the reference image — same face shape, same messy black side
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
 Head faces straight forward, no tilt, no turning away.
 
-Change only the expression: shy and flustered, wanting to hide. His cheeks flush a clear soft red —
-this is the most noticeable thing about the expression. His brows stay nearly level and relaxed,
-at most barely lifted at the inner edge; they must NOT be pulled down (that reads as annoyed) and
-NOT steeply tilted (that reads as sad). His narrow eyes are lowered and his pupils drift down and
-away, unable to meet your eyes, while his head stays perfectly straight and facing forward. His
-mouth is small and lightly pressed shut, a little tense, as if holding back a word. No tears, no
-pout, no sulk. Keep his original narrow eye shape.
+Change only the expression: shy. The eyes must stay EXACTLY as they are in the reference — same
+narrow shape, same eyelid height, same amount of visible iris, same white of the eye. Do not close
+them further, do not blur them, do not merge them into a flat shape. The only change is the pupils,
+which are shifted to look down and to one side, as if he cannot meet your eyes.
+His mouth becomes a single short, thin, slightly tense horizontal line.
+Do not add blush, do not add red or pink patches on the cheeks, do not add any color to the face
+beyond what is already in the reference. Keep his original narrow eye shape.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -222,7 +222,8 @@ same dark charcoal high-neck top, same slim proportions, same colors. Do not red
 Head faces straight forward, no tilt.
 
 Change only the expression: woozy and dazed. His eyes are drawn as two small X shapes,
-and his mouth is a small wavy line. Cheeks slightly flushed. He looks light-headed, not angry.
+and his mouth is a small wavy line. He looks light-headed, not angry. Do not add blush or red
+patches on the cheeks.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -244,7 +245,7 @@ background, nothing else. No text, no shadow, no glow.
 | `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
 | `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
 | `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
-| `shy` | 细长眼垂下，瞳孔**躲开** | 抿着的短小线 | 保留 |
+| `shy` | **完全不动**，只有瞳孔偏向下方 | 细短的一条抿线 | 保留 |
 | `think` | 细长眼，瞳孔偏上 | 平线 | 保留 |
 | `tired` | 细长眼压到最沉 | 一条线 | 保留 |
 | `surprise` | 细长眼**睁大**，虹膜露出更多 | 小圆微张 | 保留（优先） |
