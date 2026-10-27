@@ -111,10 +111,12 @@ Same character as the reference image — same face shape, same messy black side
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
 Head faces straight forward, no tilt, no turning away.
 
-Change only the expression: flustered. His usual narrow eyes drop and look slightly downward,
-his cheeks are noticeably redder and rounder than in the reference, and his mouth is a small shy
-wavy line. He is embarrassed but still facing you. Keep his original narrow eye shape — do not
-simplify the eyes into dots.
+Change only the expression: tsundere — flustered but refusing to admit it. His cheeks are clearly
+redder than in the reference. His brows are pulled down and slightly inward, giving a sulky,
+reluctant look — NOT the sad upward-tilted brows. His narrow eyes stay narrowed and his pupils are
+shifted off to one side as if avoiding eye contact, while his head remains perfectly straight and
+facing forward. His mouth is a short line pushed a little to one side — small, stubborn, like he is
+about to mutter "whatever." No tears, no pleading look. Keep his original narrow eye shape.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -241,7 +243,7 @@ background, nothing else. No text, no shadow, no glow.
 | `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
 | `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
 | `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
-| `shy` | 细长眼垂下、视线向下 | 小波浪 | 保留 |
+| `shy` | 细长眼，瞳孔**偏开躲你** | 短嘴**往一侧撇** | 保留 |
 | `think` | 细长眼，瞳孔偏上 | 平线 | 保留 |
 | `tired` | 细长眼压到最沉 | 一条线 | 保留 |
 | `surprise` | 细长眼**睁大**，虹膜露出更多 | 小圆微张 | 保留（优先） |
