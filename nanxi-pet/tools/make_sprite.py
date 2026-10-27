@@ -1,8 +1,16 @@
-import os, sys
-from PIL import Image
+import os
+import sys
+
+from PIL import Image, ImageFilter
 import numpy as np
 
-def _root(p):
+SIZE = 64
+FIG_H = 56
+BASE_W = 640
+BBOX_640 = (143, 129, 497, 549)
+
+
+def root_dir(p):
     d = os.path.dirname(os.path.abspath(p))
     while d != os.path.dirname(d):
         if os.path.isdir(os.path.join(d, 'pet_frames')):
@@ -11,36 +19,30 @@ def _root(p):
     raise SystemExit('找不到 pet_frames')
 
 
-D = _root(__file__)
+D = root_dir(__file__)
 OUT = os.path.join(D, 'pet_frames', 'mimo')
 os.makedirs(OUT, exist_ok=True)
 
-SIZE = 64
-FIG_H = 56
-# 锁死 bbox：以最先两张为准，所有动作图都用这个框裁，保证像素级对齐
-BBOX = (143, 129, 497, 549)
+
+def bbox_for(w):
+    s = w / float(BASE_W)
+    return tuple(int(round(v * s)) for v in BBOX_640)
 
 
 def cut_magenta(im):
-    a = np.array(im.convert('RGB')).astype(np.int16)
+    """抠品红。判定放宽到含边缘混色，再做 1px 腐蚀，粉边一次清干净。"""
+    rgb = np.array(im.convert('RGB'))
+    a = rgb.astype(np.int16)
     r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
-    bg = (r > 165) & (b > 165) & (g < 125) & (np.abs(r - b) < 80)
-    alpha = np.where(bg, 0, 255).astype(np.uint8)
-    return np.dstack([a.astype(np.uint8), alpha])
+    bg = (r > 150) & (b > 140) & (g < 150) & ((r - g) > 45) & ((b - g) > 35)
+    al = np.where(bg, 0, 255).astype(np.uint8)
+    al = np.array(Image.fromarray(al).filter(ImageFilter.MinFilter(3)))
+    # 块内中值滤波：去掉伪像素块里的噪点，缩小后不会糊成灰
+    rgb = np.array(Image.fromarray(rgb).filter(ImageFilter.MedianFilter(5)))
+    return rgb, al
 
 
-def premult_resize(rgba, size):
-    arr = rgba.astype(np.float32)
-    rgb, al = arr[:, :, :3], arr[:, :, 3:4] / 255.0
-    pm = rgb * al
-    pm_img = Image.fromarray(np.clip(pm, 0, 255).astype(np.uint8))
-    a_img = Image.fromarray((al[:, :, 0] * 255).astype(np.uint8), 'L')
-    pm_r = np.array(pm_img.resize(size, Image.BOX)).astype(np.float32)
-    a_r = np.array(a_img.resize(size, Image.BOX)).astype(np.float32) / 255.0
-    return pm_r / np.clip(a_r[:, :, None], 1e-3, 1.0), a_r
-
-
-def kmeans(pixels, k=16, iters=24, seed=0):
+def kmeans(pixels, k=24, iters=30, seed=0):
     rs = np.random.RandomState(seed)
     cent = pixels[rs.choice(len(pixels), min(k, len(pixels)), replace=False)].copy()
     for _ in range(iters):
@@ -54,7 +56,6 @@ def kmeans(pixels, k=16, iters=24, seed=0):
 
 
 def paste(dst, rgb, alpha, x, y):
-    """把 rgb/alpha 贴到 dst 的 (x,y)，超出边界的部分自动裁掉（不报错）"""
     h, w = alpha.shape
     H, W = dst.shape[:2]
     x0, y0 = max(0, x), max(0, y)
@@ -66,53 +67,56 @@ def paste(dst, rgb, alpha, x, y):
     dst[y0:y1, x0:x1, 3] = alpha[sy:sy + (y1 - y0), sx:sx + (x1 - x0)]
 
 
-def process(src, name):
-    arr = cut_magenta(Image.open(src))
+def process(src, name, save=True):
+    im = Image.open(src)
+    rgb, al = cut_magenta(im)
+    BB = bbox_for(im.size[0])
+    scale = FIG_H / float(BB[3] - BB[1])
 
-    # 缩放比以「角色主体」（固定 BBOX）为准，符号之类的附加物不会把人挤小
-    scale = FIG_H / float(BBOX[3] - BBOX[1])
-
-    # 真实前景（含头顶的生气符号），向左上/右下扩出去，只扩不缩
-    ys, xs = np.where(arr[:, :, 3] > 0)
+    ys, xs = np.where(al > 0)
     fx0, fy0, fx1, fy1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
-    cx0, cy0 = min(BBOX[0], fx0), min(BBOX[1], fy0)
-    cx1, cy1 = max(BBOX[2], fx1), max(BBOX[3], fy1)
-    crop = arr[cy0:cy1, cx0:cx1]
+    cx0, cy0 = min(BB[0], fx0), min(BB[1], fy0)
+    cx1, cy1 = max(BB[2], fx1), max(BB[3], fy1)
 
+    crop_rgb = rgb[cy0:cy1, cx0:cx1]
+    crop_al = al[cy0:cy1, cx0:cx1]
     tw = max(1, round((cx1 - cx0) * scale))
     th = max(1, round((cy1 - cy0) * scale))
-    rgb, al = premult_resize(crop, (tw, th))
-    al = (al > 0.45).astype(np.uint8) * 255
 
-    # 角色主体居中贴底；符号按它在裁剪区里的相对位置自然偏移
-    base_x = (SIZE - round((BBOX[2] - BBOX[0]) * scale)) // 2
+    # NEAREST：直接取原生像素点，不做颜色平均，黑发不会被混成灰
+    r_small = np.array(Image.fromarray(crop_rgb).resize((tw, th), Image.NEAREST))
+    a_small = np.array(Image.fromarray(crop_al).resize((tw, th), Image.NEAREST))
+    a_small = np.where(a_small > 127, 255, 0).astype(np.uint8)
+
+    base_x = (SIZE - round((BB[2] - BB[0]) * scale)) // 2
     base_y = SIZE - FIG_H
-    px = base_x - round((BBOX[0] - cx0) * scale)
-    py = base_y - round((BBOX[1] - cy0) * scale)
 
-    # 大画布贴上去再裁，超出边界的部分（离得太远的符号）自然被裁掉
     big = np.zeros((SIZE * 3, SIZE * 3, 4), np.uint8)
-    paste(big, np.clip(rgb, 0, 255).astype(np.uint8), al, SIZE + px, SIZE + py)
+    paste(big, r_small, a_small,
+          SIZE + base_x - round((BB[0] - cx0) * scale),
+          SIZE + base_y - round((BB[1] - cy0) * scale))
     canvas = big[SIZE:SIZE * 2, SIZE:SIZE * 2].copy()
 
     mask = canvas[:, :, 3] > 0
-    px = canvas[mask][:, :3].astype(np.float32)
-    cent = kmeans(px, k=16)
-    d = ((px[:, None, :] - cent[None, :, :]) ** 2).sum(2)
-    canvas[mask, :3] = cent[d.argmin(1)].round().astype(np.uint8)
+    if mask.any():
+        px = canvas[mask][:, :3].astype(np.float32)
+        cent = kmeans(px, k=24)
+        d = ((px[:, None, :] - cent[None, :, :]) ** 2).sum(2)
+        canvas[mask, :3] = cent[d.argmin(1)].round().astype(np.uint8)
 
-    r, g, b = canvas[:, :, 0].astype(int), canvas[:, :, 1].astype(int), canvas[:, :, 2].astype(int)
-    magenta = (r > 140) & (b > 140) & (g < 110) & (np.abs(r - b) < 80)
-    canvas[magenta, 3] = 0
+    # 缩放后仍残留的品红像素直接砍掉
+    rr, gg, bb = (canvas[:, :, 0].astype(int), canvas[:, :, 1].astype(int),
+                  canvas[:, :, 2].astype(int))
+    mag = (rr > 150) & (bb > 140) & ((rr - gg) > 45) & ((bb - gg) > 35)
+    left = (mag & (canvas[:, :, 3] > 0)).sum()
+    canvas[mag, 3] = 0
 
-    img = Image.fromarray(canvas, 'RGBA')
-    img.save(os.path.join(OUT, name + '.png'))
-    print('%-10s fig %dx%d  色数 %d  bbox %s' % (
-        name, tw, FIG_H,
-        len(set(map(tuple, canvas[canvas[:, :, 3] > 0][:, :3]))), img.getbbox()))
+    if save:
+        Image.fromarray(canvas, 'RGBA').save(os.path.join(OUT, name + '.png'))
+        cols = len(set(map(tuple, canvas[canvas[:, :, 3] > 0][:, :3])))
+        print('%-12s %dx%d 色数 %d 清掉品红 %d' % (name, tw, th, cols, left))
     return canvas
 
 
 if __name__ == '__main__':
-    src, name = sys.argv[1], sys.argv[2]
-    process(src, name)
+    process(sys.argv[1], sys.argv[2])
