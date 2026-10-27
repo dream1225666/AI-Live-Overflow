@@ -1,26 +1,36 @@
-# 墨墨表情 · 可直接复制的 prompt
+# 墨墨表情 · 可直接复制的 prompt（全正脸版）
 
-**用法**：在同一个 ChatGPT 会话里，先把 `idle_a`（睁眼那张）当参考图传上去，
-然后一条一条复制下面的 prompt 发出去。每段都是完整的，不用自己加任何东西。
+**用法**：同一个 ChatGPT 会话里，先把 `idle_a`（睁眼那张）当参考图传上去，
+然后一条条复制下面的 prompt 发出去。每段都是完整的，不用自己加任何东西。
 
 **存 PNG，不要截图。**
 
-建议顺序：`annoyed` → `glance` → `happy` → `sad` → `angry` → `shy` → `think` → `sleep` → `surprise` → `tired`。
-前两个最立人设，先看他成不成立。
+---
+
+## 一条总纪律：全部正脸
+
+**头必须正对镜头。不许侧转、不许歪头、不许低头抬头。**
+
+原因很实际：侧转在 64px 下会糊成一团，而且每张侧的角度都不太一样，合成循环时会跳。
+正脸还有个好处——所有表情都靠「眼睛 + 眉毛 + 嘴」三样说话，识别度高、一致性稳。
+
+情绪不用藏着。之前我把幅度压成 1 像素，结果几个表情互相看不出区别，等于白做。
+**该笑就笑，该垮就垮。**
 
 ---
 
-## 1 · annoyed　无语 ★
+## 1 · happy　开心
 
-眯成一条缝，嘴压得更短。被你说傻话时的表情。
+眼睛微弯，嘴角明显上扬。这个可以看得出在笑。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: utterly unimpressed. His narrow eyes are narrowed further into thin
-horizontal slits, his eyebrows sit flat and level, and his mouth is compressed into a shorter,
-flatter line than usual.
+Change only the expression: he is genuinely pleased. His narrow eyes curve into gentle upward
+arcs, and his mouth is a clear, soft smile — the corners lifted noticeably, not just a pixel.
+Keep it restrained in style but readable as a smile.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -30,17 +40,18 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 2 · glance　斜眼瞥 ★
+## 2 · annoyed　无语 ★
 
-脸完全不动，只有眼睛偏向一侧。「又干嘛」。
+眼睛压成一条横线（死鱼眼），嘴压成更短的线。被你说傻话时的表情。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: his head, body and shoulders stay completely still and facing forward,
-but his eyes are turned to look off to one side — a flat, half-lidded side-eye, mildly irritated.
-Nothing else moves.
+Change only the expression: utterly unimpressed. His eyes are flattened into thin horizontal
+lines — almost dead-fish eyes, no visible pupil highlight. His mouth is compressed into a short
+flat line, shorter than usual. Brows level.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -50,17 +61,17 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 3 · happy　开心
+## 3 · sad　低落
 
-眼睛微微弯一点，嘴角抬一格。他不出声地高兴。
+眉毛内侧上挑，眼睛下垂，嘴角向下。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt, no lowering.
 
-Change only the expression: the faintest hint of warmth. His half-closed eyes curve very slightly
-upward at the outer edge, and one corner of his mouth lifts by a single pixel. It should be barely
-noticeable — he does not smile openly.
+Change only the expression: downcast. His eyebrows tilt upward in the middle, his eyelids droop
+so the eyes look heavier and lower, and his mouth is a small curve bending downward at the corners.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -70,16 +81,18 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 4 · sad　低落
+## 4 · angry　不悦
 
-眼睑垂下来遮住更多虹膜，眉头内侧上挑，头低一格。
+眉毛压成倒八字，眼睛变窄，嘴抿成短横。可以稍微凶一点。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: downcast. His eyelids droop lower, covering more of the iris than usual,
-his brows tilt slightly upward in the middle, and his head lowers by one grid step.
+Change only the expression: clearly irritated. His eyebrows are pressed down and angled inward
+like a shallow V, his eyes narrowed and sharp, and his mouth pulled into a short tight line.
+The mood is annoyed and sulky, not screaming.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -89,16 +102,19 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 5 · angry　不悦
+## 5 · shy　害羞
 
-眉头压低，视线更冷，嘴更薄。不是暴怒。
+豆豆眼往下看，腮红加深，嘴是小波浪。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt, no turning away.
 
-Change only the expression: quietly displeased. His eyebrows press down and slightly inward,
-his eyes grow colder and narrower, and his mouth thins out. He is not shouting — just cold.
+Change only the expression: flustered. His usual narrow eyes drop and look slightly downward,
+his cheeks are noticeably redder and rounder than in the reference, and his mouth is a small shy
+wavy line. He is embarrassed but still facing you. Keep his original narrow eye shape — do not
+simplify the eyes into dots.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -108,16 +124,18 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 6 · shy　害羞
+## 6 · think　思考
 
-侧过一点脸，视线躲开，腮红加深。
+眼睛看向斜上方，一边眉毛略抬。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: flustered but trying to hide it. His head turns slightly to one side,
-his eyes drop away toward the floor, and his cheeks are redder than in the reference.
+Change only the expression: thinking it over. His pupils are shifted up and to one side as if
+looking at something above, one eyebrow raised slightly higher than the other, mouth a small flat
+line. No hand gesture needed.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -127,16 +145,18 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 7 · think　思考
+## 7 · sleep　睡着
 
-眼睛看向斜上方，一侧眉毛略抬，头微倾。
+眼睛闭成两条向下弯的弧，嘴微张成小圆。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt, no nodding off to the side.
 
-Change only the expression: thinking. His eyes glance up and to one side, one eyebrow is raised
-very slightly, and his head tilts just a little. Arms stay where they are.
+Change only the expression: peacefully asleep. Both eyes are closed and drawn as two soft
+downward-curving arcs, with no iris visible. His mouth is slightly open in a small relaxed oval.
+Shoulders a touch lower than the reference.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -146,16 +166,19 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 8 · sleep　睡着
+## 8 · surprise　惊讶
 
-完全闭眼，头歪向一侧，肩膀放松。
+眼睛变成圆的，嘴小圆张开。这是可以夸张的那个。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: asleep. His eyes are fully closed — just the eyelid lines, no visible
-iris — his head tilts to one side, and his shoulders are relaxed and slightly lower.
+Change only the expression: caught off guard. His narrow eyes are opened wider than usual — more
+of the blue-grey iris showing than in any other expression — brows lifted, and his mouth a small
+open oval. Keep the narrow eye shape; do not turn the eyes into circles unless the widened narrow
+version reads poorly at this size.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -165,17 +188,18 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 9 · surprise　惊讶
+## 9 · tired　疲惫
 
-眼睛睁得比平时大一点。对他来说这已经算夸张了。
+眼睑压到最沉，眼下有一道浅色，嘴一条线。头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt, no drooping.
 
-Change only the expression: caught off guard. His eyes are opened noticeably wider than his usual
-half-closed state — for him this already counts as an extreme reaction — and his brows lift slightly.
-Mouth stays closed. He is not startled into a big pose.
+Change only the expression: worn out. His eyelids hang at their heaviest, covering most of the
+eye, with a faint shadow beneath them. Mouth a single flat line. Shoulders dropped slightly.
+Drained rather than sad.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
@@ -185,31 +209,57 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 10 · tired　疲惫
+## 10 · dizzy　晕
 
-比 sad 更沉的眼睑，肩塌，头微低。
+眼睛变成两个叉或两个小漩涡，嘴是小波浪。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
 
-Change only the expression: exhausted. His eyelids hang heavier than in a sad expression, his head
-is slightly lowered, and his shoulders have dropped. The overall feel is drained rather than unhappy.
+Change only the expression: woozy and dazed. His eyes are drawn as two small X shapes,
+and his mouth is a small wavy line. Cheeks slightly flushed. He looks light-headed, not angry.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
 do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
 background, nothing else. No text, no shadow, no glow.
 ```
+
+---
+
+## 眼睛画法的对照
+
+**原则：优先保留他原本的细长眼型。符号化只是兜底，不是默认。**
+
+正脸 + 64px 下，眼睛是最能出效果的地方，但改法要克制：
+
+| 表情 | 眼睛 | 嘴 | 是否改变眼型 |
+|---|---|---|---|
+| `happy` | 细长眼弯成上弧 | 明显微笑弧 | 保留 |
+| `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
+| `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
+| `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
+| `shy` | 细长眼垂下、视线向下 | 小波浪 | 保留 |
+| `think` | 细长眼，瞳孔偏上 | 平线 | 保留 |
+| `tired` | 细长眼压到最沉 | 一条线 | 保留 |
+| `surprise` | 细长眼**睁大**，虹膜露出更多 | 小圆微张 | 保留（优先） |
+| `sleep` | **两条下弯弧 ∩** | 小圆微张 | 必须改（闭眼就是弧） |
+| `dizzy` | **两个叉 ×** | 小波浪 | 必须改（晕是符号） |
+
+**十个里只有两个真的换了眼型**——`sleep` 因为闭眼只能画弧，`dizzy` 因为"晕"在像素里就是叉。
+其余八个都靠**眼睑高度、瞳孔位置、眉毛角度、嘴型**的变化，眼型本身不动。
+
+这样才能保证十张是同一个人的十种表情，而不是十个不同的小人。
 
 ---
 
 ## 出完之后
 
-按 `<表情名>.png` 命名发给我（比如 `annoyed.png`、`glance.png`），一批一起给。
+按 `<表情名>.png` 命名发给我（`happy.png`、`annoyed.png`…），一批一起给。
 
 我会统一处理：锁 bbox 裁切 → alpha 预乘缩放 → 16 色量化 → 和 `idle_a` 配对成循环 →
-生成 `mimo_<名字>.png` 雪碧图 → 跑预览页给你看 → 一起打进 APK。
+生成 `mimo_<名字>.png` → 更新预览页 → 一起打进 APK。
 
-**如果某张出来脸型变了 / 头发变了 / 构图移了，直接重出那张，别发给我。**
-一张不齐的图会毁掉整个动作的循环。
+**某张脸型变了 / 头发变了 / 头歪了 / 构图移了，直接重出那张，别发给我。**
