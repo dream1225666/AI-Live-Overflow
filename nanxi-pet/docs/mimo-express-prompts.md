@@ -83,7 +83,7 @@ background, nothing else. No text, no shadow, no glow.
 
 ## 4 · angry　不悦
 
-眉毛压成倒八字，眼睛变窄，嘴抿成短横。可以稍微凶一点。
+眉毛压成倒八字，眼睛变窄，嘴抿成短横，**头顶右上方浮一个红色青筋符号**（贴着头发，不能飘远）。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
@@ -93,6 +93,12 @@ Head faces straight forward, no tilt.
 Change only the expression: clearly irritated. His eyebrows are pressed down and angled inward
 like a shallow V, his eyes narrowed and sharp, and his mouth pulled into a short tight line.
 The mood is annoyed and sulky, not screaming.
+
+Also add one small comic anger mark floating just above the upper-right side of his head, sitting
+close to the hair: the classic four-stroke anger vein symbol, drawn in flat red, in the same chunky
+pixel style and the same pixel size as the character. Make it about the size of one of his eyes.
+Leave only a thin gap between the symbol and the hair — it must sit right next to the head, not
+float away, and must not overlap his face.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —

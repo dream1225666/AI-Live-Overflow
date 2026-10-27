@@ -53,20 +53,47 @@ def kmeans(pixels, k=16, iters=24, seed=0):
     return cent
 
 
+def paste(dst, rgb, alpha, x, y):
+    """把 rgb/alpha 贴到 dst 的 (x,y)，超出边界的部分自动裁掉（不报错）"""
+    h, w = alpha.shape
+    H, W = dst.shape[:2]
+    x0, y0 = max(0, x), max(0, y)
+    x1, y1 = min(W, x + w), min(H, y + h)
+    if x1 <= x0 or y1 <= y0:
+        return
+    sx, sy = x0 - x, y0 - y
+    dst[y0:y1, x0:x1, :3] = rgb[sy:sy + (y1 - y0), sx:sx + (x1 - x0)]
+    dst[y0:y1, x0:x1, 3] = alpha[sy:sy + (y1 - y0), sx:sx + (x1 - x0)]
+
+
 def process(src, name):
     arr = cut_magenta(Image.open(src))
-    x0, y0, x1, y1 = BBOX
-    crop = arr[y0:y1, x0:x1]
 
-    h, w = crop.shape[:2]
-    tw = max(1, round(w * FIG_H / h))
-    rgb, al = premult_resize(crop, (tw, FIG_H))
+    # 缩放比以「角色主体」（固定 BBOX）为准，符号之类的附加物不会把人挤小
+    scale = FIG_H / float(BBOX[3] - BBOX[1])
+
+    # 真实前景（含头顶的生气符号），向左上/右下扩出去，只扩不缩
+    ys, xs = np.where(arr[:, :, 3] > 0)
+    fx0, fy0, fx1, fy1 = xs.min(), ys.min(), xs.max() + 1, ys.max() + 1
+    cx0, cy0 = min(BBOX[0], fx0), min(BBOX[1], fy0)
+    cx1, cy1 = max(BBOX[2], fx1), max(BBOX[3], fy1)
+    crop = arr[cy0:cy1, cx0:cx1]
+
+    tw = max(1, round((cx1 - cx0) * scale))
+    th = max(1, round((cy1 - cy0) * scale))
+    rgb, al = premult_resize(crop, (tw, th))
     al = (al > 0.45).astype(np.uint8) * 255
 
-    canvas = np.zeros((SIZE, SIZE, 4), np.uint8)
-    ox, oy = (SIZE - tw) // 2, SIZE - FIG_H
-    canvas[oy:oy + FIG_H, ox:ox + tw, :3] = np.clip(rgb, 0, 255).astype(np.uint8)
-    canvas[oy:oy + FIG_H, ox:ox + tw, 3] = al
+    # 角色主体居中贴底；符号按它在裁剪区里的相对位置自然偏移
+    base_x = (SIZE - round((BBOX[2] - BBOX[0]) * scale)) // 2
+    base_y = SIZE - FIG_H
+    px = base_x - round((BBOX[0] - cx0) * scale)
+    py = base_y - round((BBOX[1] - cy0) * scale)
+
+    # 大画布贴上去再裁，超出边界的部分（离得太远的符号）自然被裁掉
+    big = np.zeros((SIZE * 3, SIZE * 3, 4), np.uint8)
+    paste(big, np.clip(rgb, 0, 255).astype(np.uint8), al, SIZE + px, SIZE + py)
+    canvas = big[SIZE:SIZE * 2, SIZE:SIZE * 2].copy()
 
     mask = canvas[:, :, 3] > 0
     px = canvas[mask][:, :3].astype(np.float32)
