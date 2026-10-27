@@ -280,7 +280,7 @@ background, nothing else. No text, no shadow, no glow.
 | `drag` **被拎起来** | **现在拖他的时候还是站着的**，像拽一块纸板。这是目前最明显的缺口 | 1 |
 | `fling` **被甩飞** | 甩出去要有姿态，不能平移 | 2 |
 | `wake` **醒来** | 从睡着切到任何状态，没有过渡就是硬切 | 1 |
-| `poke` **被戳** | 最基础的交互反馈，戳一下总得有反应 | 2 |
+| `confused` **被戳的反应** | 最基础的交互反馈。反应要**轻**——挑眉看一眼就够，别缩肩睁眼 | 1 |
 
 ### 有趣但不急的
 
@@ -305,13 +305,16 @@ background, nothing else. No text, no shadow, no glow.
 
 ## 建议的生成顺序
 
-**第一批（4 张）**：`drag` → `fling` → `wake` → `surprise`
+**第一批（4 张）**：`drag` → `fling` → `wake` → `confused`
 身体动作先补齐，这比多十种表情更能让人觉得「这是个活物」。
 
 **第二批（4 张）**：`happy` → `annoyed` → `shy` → `sad`
 常用的四种情绪。
 
-**第三批（看心情）**：`angry`（带青筋）→ `think` → `tired` → `dizzy`
+**第三批（看心情）**：`angry`（带青筋）→ `think` → `tired` → `dizzy` → `surprise`
+
+`surprise` 留到最后，只用于**真的被吓到**的场合（突然的通知、闹钟、你猛地凑近）。
+日常「戳一下」用 `confused`，别用惊讶——反应过头就不像他了。
 
 ---
 
@@ -372,19 +375,21 @@ do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid mage
 background, nothing else. No text, no shadow, no glow.
 ```
 
-### surprise · 惊讶（兼当 poke 用）
+### confused · 疑惑（兼当 poke 用）
 
-戳一下的反应就用这张，不用单独出 `poke`。
+**被戳的反应是「疑惑」，不是「惊讶」。** 惊讶太夸张——他不会因为被戳一下就把眼睛睁大、肩膀缩起来。
+他就是抬一下眼皮，看你一眼，意思是你干嘛。身体完全不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
 same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
 Head faces straight forward, no tilt.
 
-Change only the pose and expression: he has just been poked and is startled. His narrow eyes are
-opened wider than usual, showing more of the blue-grey iris, brows lifted, mouth a small open oval.
-His shoulders are pulled up and slightly hunched, body leaning back a little, as if reacting to
-something touching him.
+Change only the expression: mildly puzzled. One eyebrow is raised noticeably higher than the other.
+His narrow eyes shift to look directly outward at the viewer, as if asking "what do you want".
+His mouth stays a flat line, maybe tilted a hair to one side.
+His body stays completely relaxed and upright — no flinching, no hunched shoulders, no leaning back,
+no startled reaction. He is not surprised. He is just mildly bothered that you did that.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
