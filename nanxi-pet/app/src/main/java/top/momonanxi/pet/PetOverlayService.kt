@@ -97,6 +97,17 @@ class PetOverlayService : Service() {
                     "file:///android_asset/", SIZE_DP, -1, -1, "free"
                 )
                 booted = true
+                // 页面加载完再套用上次选的皮肤（show 是异步的，等一会儿）
+                val skin = getSharedPreferences("pet", MODE_PRIVATE)
+                    .getString("skin", "clawd") ?: "clawd"
+                if (skin != "clawd") {
+                    ui.postDelayed({
+                        ClawdHost.evalPet(
+                            this@PetOverlayService,
+                            "window.setSkin&&window.setSkin('$skin')"
+                        )
+                    }, 1500)
+                }
             } catch (t: Throwable) {
                 Log.e(TAG, "show 失败: $t")
             }

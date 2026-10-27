@@ -19,6 +19,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var status: TextView
     private lateinit var btnOverlay: Button
     private lateinit var btnToggle: Button
+    private lateinit var btnSkin: Button
+
+    private val prefs by lazy { getSharedPreferences("pet", MODE_PRIVATE) }
+
+    private fun curSkin() = prefs.getString("skin", "clawd") ?: "clawd"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +69,13 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(52)
         ))
 
+        btnSkin = Button(this).apply {
+            setOnClickListener { switchSkin() }
+        }
+        root.addView(btnSkin, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(52)
+        ).apply { topMargin = dp(12) })
+
         root.addView(TextView(this).apply {
             textSize = 12f
             gravity = Gravity.CENTER
@@ -86,6 +98,15 @@ class MainActivity : AppCompatActivity() {
         btnOverlay.isEnabled = !can
         btnOverlay.text = if (can) "① 悬浮窗权限 已授予" else "① 授予悬浮窗权限"
         status.text = if (can) "准备就绪" else "还差一个悬浮窗权限"
+        btnSkin.text = if (curSkin() == "mimo") "③ 形象：墨墨 → 点此换成像素螃蟹"
+        else "③ 形象：像素螃蟹 → 点此换成墨墨"
+    }
+
+    private fun switchSkin() {
+        val next = if (curSkin() == "clawd") "mimo" else "clawd"
+        prefs.edit().putString("skin", next).apply()
+        ClawdHost.evalPet(this, "window.setSkin&&window.setSkin('$next')")
+        refresh()
     }
 
     private fun openOverlaySettings() {
