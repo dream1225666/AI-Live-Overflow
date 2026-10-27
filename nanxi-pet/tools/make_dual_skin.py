@@ -13,6 +13,7 @@ PET = os.path.join(D, 'app', 'src', 'main', 'assets', 'pet.html')
 MIMO = {
     'idle': ('mimo_idle.png', 3.85),
     'talk': ('mimo_talk.png', 5),
+    'blink': ('mimo_blink.png', 10),
     'sleep': ('mimo_sleep.png', 1.5),
     'happy': ('mimo_happy.png', 5),
     'sad': ('mimo_sad.png', 4),
@@ -38,7 +39,7 @@ MIMO_ALIAS = {
     'notify': 'annoyed', 'poke_huh': 'annoyed', 'edge_poke_huh': 'annoyed',
     'edge_annoyed': 'angry', 'edge_notify': 'annoyed',
     'wake': 'annoyed', 'edge_wake': 'annoyed',
-    'poke_hit': 'love', 'left': 'love', 'right': 'love', 'edge_love': 'love',
+    'poke_hit': 'blink', 'left': 'love', 'right': 'love', 'edge_love': 'love',
     'double_jump': 'happy', 'mini_happy': 'happy', 'edge_happy': 'happy',
     'edge_shy': 'shy', 'edge_dizzy': 'dizzy', 'edge_double_jump': 'happy',
     'drop': 'drag', 'dock': 'drag', 'mini_enter': 'drag', 'mini_slide': 'drag',
@@ -47,6 +48,7 @@ MIMO_ALIAS = {
 
 def mimo_table():
     base = {k: [{'src': 'sprites_mimo/' + f, 'fps': fps}] for k, (f, fps) in MIMO.items()}
+    base['blink'][0]['loop'] = False   # 眨一下就好，停住别反复眨
     for alias, target in MIMO_ALIAS.items():
         base[alias] = base[target]
     return base
