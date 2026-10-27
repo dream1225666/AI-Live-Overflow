@@ -19,6 +19,11 @@
 看起来像换了个成年人。所以每段 prompt 里都写死 `CHIBI proportions — head about half his
 total height, short compact body, short legs`，并且加一句 `do not make him taller or slimmer`。
 
+**关于「正脸」的边界**：正脸是给**表情**定的——脸上的东西必须朝前，否则几张图对不上。
+但**姿态不需要对称**。悬空、被甩这类动作，脖子以下要松掉：身体微微后仰、两臂一高一低、
+一条腿弯一条直。**对称是僵硬的根源**，真实的重力从来不均匀。
+表情类动作（happy/sad/angry…）全身静止不动；姿态类动作（drag/fling）脸朝前、身体放开。
+
 情绪不用藏着。之前我把幅度压成 1 像素，结果几个表情互相看不出区别，等于白做。
 **该笑就笑，该垮就垮。**
 
@@ -347,10 +352,14 @@ same dark charcoal high-neck top, same CHIBI proportions — head about half his
 short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
-Change only the pose: he is dangling in mid-air. His body hangs straight down and slightly limp,
-both arms dangling loosely at his sides, both legs hanging straight down with the feet pointing
-down. His legs stay SHORT and chibi exactly as in the reference — do not lengthen them, do not make
-his body longer. The hem of his top is lifted a little, and his hair falls downward a touch.
+Change only the pose: he is dangling in mid-air, loose and off-balance.
+His body hangs slightly backward as gravity pulls his feet down. Nothing about the pose is
+symmetrical — one arm hangs a little looser and lower than the other, one knee bends slightly while
+the other leg stays straight, one shoulder sits a touch higher.
+His face still looks straight out at the viewer with the head level, but everything below the neck
+is limp and uneven, like a small thing actually dangling from a hand.
+His legs stay SHORT and chibi exactly as in the reference — do not lengthen them, do not make his
+body longer. The hem of his top is lifted a little, and his hair falls downward a touch.
 
 IMPORTANT — do not draw any hand, arm, hook, rope or object holding him up. Nothing may appear
 above his head or touching him. He hangs in empty space on his own; whoever is holding him is
