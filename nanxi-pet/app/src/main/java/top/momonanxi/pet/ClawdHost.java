@@ -55,7 +55,21 @@ public final class ClawdHost {
 
     // 有效触摸范围：只有按在 Clawd 身体上才算（画布比例 l,t,r,b）
     private static final float[] HIT_FREE = {0.19f, 0.28f, 0.81f, 0.72f};   // 自由模式：身体 8..24 x 11..21（/32）+ 余量
-    private static final float[] HIT_EDGE = {0.53f, 0.28f, 1.00f, 0.72f};   // 贴右边：身体 19..32；贴左边时镜像
+
+    /*
+     * 贴边模式的触摸区不能写死。
+     *
+     * 上游原来写的是 HIT_EDGE = {0.53, 0.28, 1.00, 0.72}，注释「贴右边：身体 19..32」——
+     * 方向是反的：窗口贴右墙是往右移，露在屏幕上的是窗口的**左**半边（0 ~ 1-miniHide）。
+     * 于是触摸区（0.53~1.0）和可见区（0~0.58）只重叠 0.05，108dp 下约 5dp。
+     * 手指接触面积约 40dp，5dp 的窄条根本按不进去，
+     * 表现就是「扔到边上去之后再也拖不出来」。
+     *
+     * 现在改成按「露在屏幕上的那一段」实时计算，miniHide 改多大都跟着走。
+     */
+    private static final float EDGE_INSET_X = 0.04f;   // 屏幕最外侧留一点，别把系统返回手势全吃掉
+    private static final float EDGE_TOP = 0.10f;
+    private static final float EDGE_BOTTOM = 0.94f;
     private static float hitScale = 1f;
 
     private static final Handler UI = new Handler(Looper.getMainLooper());
@@ -563,9 +577,13 @@ public final class ClawdHost {
                         if (dragging && edgeHold) {
                             // 往屏幕里拉的距离（贴右边时往左拉为正）
                             float pull = "left".equals(side) ? dx : -dx;
-                            if (pull > sizePx * 0.45f) {          // 拉够远：扯下来
+                            // 阈值必须大于「把藏起来的 miniHide 拉回屏幕内」所需位移，
+                            // 否则会出现「扯下来了、松手又被吸回去」的震荡。
+                            // miniHide=0.42、miniTrigger=0.18 → 下限 0.42-0.18 = 0.24，取 0.30 留余量。
+                            if (pull > sizePx * 0.30f) {          // 拉够远：扯下来
                                 edgeHold = false;
                                 mode = "free"; side = "none";
+                                applyGestureExclusion();
                                 callPet("drag");
                             } else {                              // 没拉够：沿边上下滑，横向带一点橡皮筋
                                 if (!edgeSlid) { edgeSlid = true; callPet("edgeslide"); }
@@ -803,6 +821,30 @@ public final class ClawdHost {
         if (notify) callPet("free");
     }
 
+    /**
+     * 把桌宠从贴边状态拉回屏幕中间（兜底）。
+     *
+     * 万一某个机型上贴边的触摸区还是点不准，用户不至于只能关掉服务重开。
+     */
+    public static void bringBack(Context ctx) {
+        if (appCtx == null) appCtx = ctx.getApplicationContext();
+        UI.post(new Runnable() {
+            @Override public void run() {
+                if (petView == null || lp == null) return;
+                if (glide != null) { glide.cancel(); glide = null; }
+                int[] sc = screen();
+                mode = "free"; side = "none";
+                lp.x = (sc[0] - sizePx) / 2;
+                lp.y = (sc[1] - sizePx) / 3;
+                updatePet();
+                layoutBubble();
+                applyGestureExclusion();
+                writeDragEnd();
+                callPet("free");
+            }
+        });
+    }
+
     private static void clampDrag() {
         int[] sc = screen();
         int allow = (int) (sizePx * 0.6f);
@@ -840,9 +882,18 @@ public final class ClawdHost {
 
     /** 当前模式下 Clawd 身体在画布里的矩形（像素） */
     private static Rect hitRect() {
-        float[] h = "mini".equals(mode) ? HIT_EDGE : HIT_FREE;
-        float l = h[0], t = h[1], r = h[2], b = h[3];
-        if ("mini".equals(mode) && "left".equals(side)) { float nl = 1f - r; r = 1f - l; l = nl; }
+        if ("mini".equals(mode)) {
+            boolean left = "left".equals(side);
+            // 露在屏幕上的那一段：贴左墙 → [miniHide, 1]，贴右墙 → [0, 1-miniHide]
+            float l = left ? miniHide : EDGE_INSET_X;
+            float r = left ? 1f - EDGE_INSET_X : 1f - miniHide;
+            return scaledRect(l, EDGE_TOP, r, EDGE_BOTTOM);
+        }
+        return scaledRect(HIT_FREE[0], HIT_FREE[1], HIT_FREE[2], HIT_FREE[3]);
+    }
+
+    /** 按 hitScale 以中心缩放，并夹在画布内 */
+    private static Rect scaledRect(float l, float t, float r, float b) {
         float cx = (l + r) / 2f, cy = (t + b) / 2f, hw = (r - l) / 2f * hitScale, hh = (b - t) / 2f * hitScale;
         l = Math.max(0f, cx - hw); r = Math.min(1f, cx + hw); t = Math.max(0f, cy - hh); b = Math.min(1f, cy + hh);
         return new Rect(Math.round(l * sizePx), Math.round(t * sizePx), Math.round(r * sizePx), Math.round(b * sizePx));

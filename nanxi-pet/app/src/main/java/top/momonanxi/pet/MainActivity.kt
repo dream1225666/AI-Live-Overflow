@@ -76,6 +76,17 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(52)
         ).apply { topMargin = dp(12) })
 
+        // 兜底：贴边后万一摸不到它，一键叫回屏幕中间
+        val btnBack = Button(this).apply {
+            text = "它贴边后摸不到？点这里叫回来"
+            textSize = 13f
+            alpha = 0.85f
+            setOnClickListener { ClawdHost.bringBack(this@MainActivity) }
+        }
+        root.addView(btnBack, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(44)
+        ).apply { topMargin = dp(8) })
+
         root.addView(TextView(this).apply {
             textSize = 12f
             gravity = Gravity.CENTER
