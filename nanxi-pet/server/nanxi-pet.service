@@ -1,0 +1,15 @@
+[Unit]
+Description=Nanxi Pet Body (state bus for the floating pet)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/pet-server
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 0.0.0.0 --port 8905 --log-level warning
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
