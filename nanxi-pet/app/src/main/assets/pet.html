@@ -27,6 +27,8 @@ img.on{visibility:visible}
   80%{transform:translateX(var(--shift)) rotate(calc(var(--lean)*-.85))}
   100%{transform:translateX(var(--shift)) rotate(calc(var(--lean)*-1))}}
 #cv{image-rendering:pixelated!important}
+@keyframes jolt{0%,100%{translate:0 0}28%{translate:-2px 0}58%{translate:2px 0}82%{translate:-1px 0}}
+#w.jolt{animation:jolt .24s ease-out}
 </style></head>
 <body><div id="flip"><div id="w"><canvas id="cv" width="32" height="32"></canvas></div></div>
 <script>
@@ -70,6 +72,12 @@ var cv = document.getElementById('cv'), cx = cv.getContext('2d');
 cx.imageSmoothingEnabled = false;
 if (CFG.leanDeg != null) cv.style.setProperty('--lean', (+CFG.leanDeg || 0) + 'deg');
 if (CFG.leanShift != null) cv.style.setProperty('--shift', (+CFG.leanShift || 0) + '%');
+function jolt() {
+  w.classList.remove('jolt');
+  void w.offsetWidth;
+  w.classList.add('jolt');
+  setTimeout(function () { w.classList.remove('jolt'); }, 260);
+}
 function wobble() { cv.classList.remove('wob'); void cv.offsetWidth; cv.classList.add('wob'); }
 var sp = { v: null, img: null, f: 0, n: 1, t: null }, sprCache = {};
 function sprImg(src) { if (!sprCache[src]) { var i = new Image(); i.src = src; sprCache[src] = i; } return sprCache[src]; }
@@ -218,6 +226,7 @@ window.clawd = function (e) {
     case 'release':   w.className = mode === 'mini' ? 'mini' : ''; break;
     case 'drag':      clearTimeout(flashTimer); flashing = false; setMode('free'); play('drag', true); break;
     case 'poke':
+      jolt();
       if (wasAsleep && !work) { flash(mode === 'mini' ? 'mini_peek' : 'wake', 2600); break; }
       var huh = Math.random() < 0.18;   // 偶尔：被戳了一脸问号
       if (mode === 'mini') {

@@ -1,6 +1,7 @@
 # 墨墨表情 · 可直接复制的 prompt（全正脸版）
 
 **用法**：同一个 ChatGPT 会话里，先把 `idle_a`（睁眼那张）当参考图传上去，
+  
 然后一条条复制下面的 prompt 发出去。每段都是完整的，不用自己加任何东西。
 
 **存 PNG，不要截图。**
@@ -12,19 +13,26 @@
 **一、全部正脸。** 头必须正对镜头，不许侧转、不许歪头、不许低头抬头。
 
 原因很实际：侧转在 64px 下会糊成一团，而且每张侧的角度都不太一样，合成循环时会跳。
+  
 正脸还有个好处——所有表情都靠「眼睛 + 眉毛 + 嘴」三样说话，识别度高、一致性稳。
 
 **二、必须是 Q 版比例。** 头约占身高一半，身体短、腿短。
+  
 这一条最容易丢：一旦让 AI 画「悬空」「跳起」「被甩」这类动作，它会自动把身体拉成瘦长条，
+  
 看起来像换了个成年人。所以每段 prompt 里都写死 `CHIBI proportions — head about half his
 total height, short compact body, short legs`，并且加一句 `do not make him taller or slimmer`。
 
 **关于「正脸」的边界**：正脸是给**表情**定的——脸上的东西必须朝前，否则几张图对不上。
+  
 但**姿态不需要对称**。悬空、被甩这类动作，脖子以下要松掉：身体微微后仰、两臂一高一低、
+  
 一条腿弯一条直。**对称是僵硬的根源**，真实的重力从来不均匀。
+  
 表情类动作（happy/sad/angry…）全身静止不动；姿态类动作（drag/fling）脸朝前、身体放开。
 
 情绪不用藏着。之前我把幅度压成 1 像素，结果几个表情互相看不出区别，等于白做。
+  
 **该笑就笑，该垮就垮。**
 
 ---
@@ -249,40 +257,13 @@ do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid mage
 background, nothing else. No text, no shadow, no glow.
 ```
 
----
-
-## 眼睛画法的对照
-
-**原则：优先保留他原本的细长眼型。符号化只是兜底，不是默认。**
-
-正脸 + 64px 下，眼睛是最能出效果的地方，但改法要克制：
-
-| 表情 | 眼睛 | 嘴 | 是否改变眼型 |
-|---|---|---|---|
-| `happy` | 细长眼弯成上弧 | 明显微笑弧 | 保留 |
-| `poke` | **两段折线 `><`**（向内收） | 小上扬弧 | 改成符号（用户指定） |
-| `annoyed` | 细长眼压成横线（无高光） | 短平线 | 保留 |
-| `sad` | 细长眼垂下、眼尾向下 | 小向下弧 | 保留 |
-| `angry` | 细长眼变窄，眉压成倒八字 | 紧抿短横 | 保留 |
-| `shy` | **完全不动**，只有瞳孔偏向下方 | 细短的一条抿线 | 保留（颊上 2~3 道斜线腮红） |
-| `think` | 细长眼，瞳孔偏上 | 平线 | 保留 |
-| `tired` | 细长眼压到最沉 | 一条线 | 保留 |
-| `surprise` | 细长眼**睁大**，虹膜露出更多 | 小圆微张 | 保留（优先） |
-| `sleep` | **两条下弯弧 ∩** | 小圆微张 | 必须改（闭眼就是弧） |
-| `dizzy` | **两个叉 ×** | 小波浪 | 必须改（晕是符号） |
-
-**十个里只有两个真的换了眼型**——`sleep` 因为闭眼只能画弧，`dizzy` 因为"晕"在像素里就是叉。
-其余八个都靠**眼睑高度、瞳孔位置、眉毛角度、嘴型**的变化，眼型本身不动。
-
-这样才能保证十张是同一个人的十种表情，而不是十个不同的小人。
-
----
 
 ## 出完之后
 
 按 `<表情名>.png` 命名发给我（`happy.png`、`annoyed.png`…），一批一起给。
 
 我会统一处理：锁 bbox 裁切 → alpha 预乘缩放 → 16 色量化 → 和 `idle_a` 配对成循环 →
+  
 生成 `mimo_<名字>.png` → 更新预览页 → 一起打进 APK。
 
 **某张脸型变了 / 头发变了 / 头歪了 / 构图移了，直接重出那张，别发给我。**
@@ -295,22 +276,22 @@ background, nothing else. No text, no shadow, no glow.
 
 ### 必须的（缺了会明显穿帮）
 
-| 动作 | 为什么必须 | 要几张 |
-|---|---|---|
-| `drag` **被拎起来** | **现在拖他的时候还是站着的**，像拽一块纸板。这是目前最明显的缺口 | 1 |
-| `fling` **被甩飞** | 甩出去要有姿态，不能平移 | 2 |
-| `wake` **醒来** | 从睡着切到任何状态，没有过渡就是硬切 | 1 |
-| `poke` **被戳** | 最基础的交互反馈。用 **`><` 眼**——有点受用又不好意思，比挑眉疑惑更有互动感 | 1 |
+| 动作              | 为什么必须                                       | 要几张 |
+| --------------- | ------------------------------------------- | --- |
+| `drag` **被拎起来** | **现在拖他的时候还是站着的**，像拽一块纸板。这是目前最明显的缺口          | 1   |
+| `fling` **被甩飞** | 甩出去要有姿态，不能平移                                | 2   |
+| `wake` **醒来**   | 从睡着切到任何状态，没有过渡就是硬切                          | 1   |
+| `poke` | 比平时**紧一点点**（1~2px） | 平线压紧一丝 | 保留 |
 
 ### 有趣但不急的
 
-| 动作 | 效果 | 备注 |
-|---|---|---|
-| `look` 东张西望 | 空闲时随机做，立刻显得在「看着你」 | 只动瞳孔，1 张 |
-| `yawn` 打哈欠 | 深夜时段专用，配合睡眠状态 | 和 wake 可以共用 |
-| `dizzy` 晕 | 被连戳太多时 | 1 张，叉眼 |
-| `typing` 敲键盘 | AI 干活时切换 | **Q 版手太短，敲键盘很难画**。建议改成「抱着一个小方块」，比敲键盘好表达 |
-| `dock` 贴边探头 | 拖到屏幕边缘 | 需要专门的斜靠姿态 |
+| 动作           | 效果                | 备注                                      |
+| ------------ | ----------------- | --------------------------------------- |
+| `look` 东张西望  | 空闲时随机做，立刻显得在「看着你」 | 只动瞳孔，1 张                                |
+| `yawn` 打哈欠   | 深夜时段专用，配合睡眠状态     | 和 wake 可以共用                             |
+| `dizzy` 晕    | 被连戳太多时            | 1 张，叉眼                                  |
+| `typing` 敲键盘 | AI 干活时切换          | **Q 版手太短，敲键盘很难画**。建议改成「抱着一个小方块」，比敲键盘好表达 |
+| `dock` 贴边探头  | 拖到屏幕边缘            | 需要专门的斜靠姿态                               |
 
 ### 不用生成的
 
@@ -326,9 +307,11 @@ background, nothing else. No text, no shadow, no glow.
 ## 建议的生成顺序
 
 **第一批（4 张）**：`drag` → `fling` → `wake` → `poke`
+  
 身体动作先补齐，这比多十种表情更能让人觉得「这是个活物」。
 
 **第二批（4 张）**：`happy` → `annoyed` → `shy` → `sad`
+  
 常用的四种情绪。
 
 **第三批（看心情）**：`confused` → `angry`（带青筋）→ `think` → `tired` → `dizzy` → `surprise`
@@ -344,6 +327,7 @@ background, nothing else. No text, no shadow, no glow.
 **目前最明显的缺口**：现在拖他的时候身体还站着，像拽一块纸板。
 
 ⚠️ **别写「被谁拎着」**。写 `lifted by the collar` 这类描述，AI 会把施力的手一起画进来。
+  
 拖着桌子上的他时，那只手是你自己的，画面里绝不能有。**只描述他现在的样子：悬空、手脚垂下。**
 
 ```
@@ -415,10 +399,10 @@ do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid mage
 background, nothing else. No text, no shadow, no glow.
 ```
 
-### poke · 被戳（>< 眼）
+### poke · 被戳（几乎没变的那一版）
 
-被戳时的反应是**有点受用又不好意思**，不是疑惑也不是惊讶。眼睛挤成 `><`，是动漫里最直白的「喜欢」。
-身体只缩一下，不许弹开。
+**他被人戳了一下，只是眼睛本能地紧了一点。** 不要 `><`、不要笑、不要脸红、不要弹开——
+那些是萌系表达，跟他不是一路人。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
@@ -426,17 +410,19 @@ same dark charcoal high-neck top, same CHIBI proportions — head about half his
 short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
-Change only the expression: he is being poked and secretly enjoys it — flustered but pleased.
-Both eyes are squeezed shut into two short angled strokes: an inward-pointing ">" on the left and
-"<" on the right, forming the classic >< face. Draw them as pixel strokes, NOT as typed text
-characters. His mouth is a small soft upward curve. His shoulders are pulled up a little, as if
-ticklish — but he does not jump back or lean away.
+Change only the expression: he felt that. A small involuntary squint — his narrow eyes press
+slightly tighter than in the reference, no more than a pixel or two, as if something just touched
+him. His mouth stays a flat line, pressed a touch tighter. Nothing else changes: no squeezed-shut
+eyes, no upward >< shape, no smile, no blush, no head tilt, no body movement.
 
 Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
 no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
 do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
 background, nothing else. No text, no shadow, no glow.
 ```
+
+> 如果连这个都觉得夸张，那就**根本不用出图**——我直接在代码里给他加一个 1px 的抖动
+> （被碰了一下，整个人轻轻一颤），眼睛完全不变。这个效果最像「活人被戳」，而且零素材成本。
 
 ### confused · 疑惑（另做，不是被戳用）
 
