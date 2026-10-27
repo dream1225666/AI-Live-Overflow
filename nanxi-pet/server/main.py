@@ -22,6 +22,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from mcp.server.mcpserver import MCPServer
+from mcp.server.transport_security import TransportSecuritySettings
 
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
 
@@ -235,7 +236,24 @@ def pet_do(anim: str = "", say: str = "", seconds: int = 0) -> Dict[str, Any]:
 # 那样实际路径是 /mcp/，访问 /mcp 会被 307 重定向到 /mcp/，
 # 而 MCP 客户端（httpx）默认不跟随重定向，握手直接失败。
 # 所以让 MCP app 自己带 /mcp 前缀，挂到根上；FastAPI 已注册的路由会先匹配。
-mcp_app = mcp.streamable_http_app(streamable_http_path="/mcp", stateless_http=True)
+mcp_app = mcp.streamable_http_app(
+    streamable_http_path="/mcp",
+    stateless_http=True,
+    # 默认的 DNS rebinding 防护只放行 localhost，用 IP 从外网连会被挡成
+    # 「Streamable HTTP error: Invalid Host header」。这里把真实入口加进白名单。
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=[
+            "8.133.183.70:8905",
+            "8.133.183.70",
+            "pet.momonanxi.top",
+            "localhost:8905",
+            "127.0.0.1:8905",
+            "127.0.0.1",
+            "localhost",
+        ],
+    ),
+)
 
 
 @asynccontextmanager

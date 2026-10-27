@@ -93,23 +93,86 @@ pet_do(say="三点了，还睡不睡", seconds=5)     # 只说话，不换动作
 
 ---
 
-## 已验证
+## 已验证（真机 Host 头）
 
 ```
 initialize   → server = mimo-pet, protocol = 2025-06-18
 tools/list   → pet_brief / pet_status / pet_events / pet_do
-tools/call   → pet_brief 返回正常
+tools/call   → pet_status 返回电量 88、mode free、10 个动作名
+tools/call   → pet_brief 返回真实事件流
 pet_do       → seq 4 入队 → GET /poll?since=3 拿到 {"anim":"happy","say":"出来了","ms":3000}
 外网         → http://8.133.183.70:8905/health 通
 ```
 
-## 两个坑，改代码时别踩回去
+`pet_brief` 真实输出长这样（这些是用户在手机上真的做过的事）：
 
-**挂载方式**：不能 `app.mount("/mcp", mcp.streamable_http_app(streamable_http_path="/"))`。
+```json
+{
+  "while_you_were_away": [
+    "16:38 被拖到 (545, 1751)",
+    "16:38 被戳了 1 下",
+    "16:38 被双击（她大概想跟你说话）",
+    "16:39 被戳了 1 下",
+    "16:39 被甩到屏幕右边、贴住了",
+    "16:40 被拖到 (742, 1141)"
+  ],
+  "count": 10,
+  "now": {"clock": "16:41", "battery": 88, "charging": false}
+}
+```
+
+## 三个坑，改代码时别踩回去
+
+**① `Invalid Host header`（真机上第一个撞到的）**
+
+MCP SDK 默认开着 **DNS rebinding 防护**，白名单只有 localhost。
+从外网用 IP 连，Host 头是 `8.133.183.70:8905`，直接被挡：
+
+```
+StreamableHttpError: Streamable HTTP error: Invalid Host header
+```
+
+必须显式放行：
+
+```python
+from mcp.server.transport_security import TransportSecuritySettings
+
+mcp_app = mcp.streamable_http_app(
+    streamable_http_path="/mcp",
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=[
+            "8.133.183.70:8905", "8.133.183.70",   # 带不带端口都要写，两种都可能有客户端用
+            "pet.momonanxi.top",                   # 以后挂域名先写上
+            "localhost:8905", "127.0.0.1:8905",
+        ],
+    ),
+)
+```
+
+**② 挂载路径差一个斜杠**
+
+不能 `app.mount("/mcp", mcp.streamable_http_app(streamable_http_path="/"))`。
 那样实际路径是 `/mcp/`，访问 `/mcp` 会 307 重定向，而 MCP 客户端用的 httpx
-**默认不跟随重定向**，握手直接失败。正确做法是让 MCP app 自己带 `/mcp` 前缀，
-挂到根上，且 `mount` 必须写在所有 HTTP 路由之后（否则会抢走 `/health`）。
+**默认不跟随重定向**，握手直接失败、body 为空。
 
-**lifespan**：MCP 被 mount 成子 app，它自己的 lifespan 不会自动执行。
-必须在 FastAPI 的 lifespan 里手动 `async with mcp.session_manager.run()`，
-否则一调工具就报 session 未初始化。
+正确做法是让 MCP app 自己带 `/mcp` 前缀，挂到根上：
+
+```python
+mcp_app = mcp.streamable_http_app(streamable_http_path="/mcp", ...)
+app = FastAPI(...)
+# ... 所有 @app.get 都注册完 ...
+app.mount("/", mcp_app)      # 必须放最后，否则会抢走 /health
+```
+
+**③ 子 app 的 lifespan 不自动跑**
+
+MCP 是 mount 上去的子 app，它自己的 lifespan 不会执行。
+必须在 FastAPI 的 lifespan 里手动带上，否则一调工具就报 session 未初始化：
+
+```python
+@asynccontextmanager
+async def lifespan(app):
+    async with mcp.session_manager.run():
+        yield
+```
