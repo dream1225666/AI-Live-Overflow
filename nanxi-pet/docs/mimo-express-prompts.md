@@ -7,12 +7,17 @@
 
 ---
 
-## 一条总纪律：全部正脸
+## 两条总纪律
 
-**头必须正对镜头。不许侧转、不许歪头、不许低头抬头。**
+**一、全部正脸。** 头必须正对镜头，不许侧转、不许歪头、不许低头抬头。
 
 原因很实际：侧转在 64px 下会糊成一团，而且每张侧的角度都不太一样，合成循环时会跳。
 正脸还有个好处——所有表情都靠「眼睛 + 眉毛 + 嘴」三样说话，识别度高、一致性稳。
+
+**二、必须是 Q 版比例。** 头约占身高一半，身体短、腿短。
+这一条最容易丢：一旦让 AI 画「悬空」「跳起」「被甩」这类动作，它会自动把身体拉成瘦长条，
+看起来像换了个成年人。所以每段 prompt 里都写死 `CHIBI proportions — head about half his
+total height, short compact body, short legs`，并且加一句 `do not make him taller or slimmer`。
 
 情绪不用藏着。之前我把幅度压成 1 像素，结果几个表情互相看不出区别，等于白做。
 **该笑就笑，该垮就垮。**
@@ -25,7 +30,8 @@
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: he is genuinely pleased. His narrow eyes curve into gentle upward
@@ -46,7 +52,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: utterly unimpressed. His eyes are flattened into thin horizontal
@@ -67,7 +74,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt, no lowering.
 
 Change only the expression: downcast. His eyebrows tilt upward in the middle, his eyelids droop
@@ -87,7 +95,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: clearly irritated. His eyebrows are pressed down and angled inward
@@ -114,7 +123,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt, no turning away.
 
 Change only the expression: shy. The eyes must stay EXACTLY as they are in the reference — same
@@ -141,7 +151,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: thinking it over. His pupils are shifted up and to one side as if
@@ -174,7 +185,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: caught off guard. His narrow eyes are opened wider than usual — more
@@ -196,7 +208,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt, no drooping.
 
 Change only the expression: worn out. His eyelids hang at their heaviest, covering most of the
@@ -217,7 +230,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: woozy and dazed. His eyes are drawn as two small X shapes,
@@ -329,12 +343,14 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the pose: he is dangling in mid-air. His body hangs straight down and slightly limp,
-both arms dangling loosely at his sides, both legs hanging with the feet pointing down.
-The hem of his top is lifted a little, and his hair falls downward a touch.
+both arms dangling loosely at his sides, both legs hanging straight down with the feet pointing
+down. His legs stay SHORT and chibi exactly as in the reference — do not lengthen them, do not make
+his body longer. The hem of his top is lifted a little, and his hair falls downward a touch.
 
 IMPORTANT — do not draw any hand, arm, hook, rope or object holding him up. Nothing may appear
 above his head or touching him. He hangs in empty space on his own; whoever is holding him is
@@ -353,7 +369,8 @@ No text, no shadow, no glow, no motion lines.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 
 Change only the pose: he is tumbling through the air sideways. His whole body is tilted about
 30 degrees away from vertical, arms and legs trailing behind him in the direction he came from,
@@ -374,7 +391,8 @@ No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the pose and expression: he has just snapped awake. Both eyes are now open — wider than
@@ -395,7 +413,8 @@ background, nothing else. No text, no shadow, no glow.
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+same dark charcoal high-neck top, same CHIBI proportions — head about half his total height,
+short compact body, short legs, same colors. Do not redesign, do not make him taller or slimmer.
 Head faces straight forward, no tilt.
 
 Change only the expression: mildly puzzled. One eyebrow is raised noticeably higher than the other.
