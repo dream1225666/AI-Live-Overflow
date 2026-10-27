@@ -22,8 +22,10 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
 
-EVENTS: deque = deque(maxlen=300)
-CMDS: deque = deque(maxlen=100)
+# 环形缓冲只留 40 条：墨墨是每 2 秒轮询的，永远读不到历史。
+# 40 条只用来兜住「连戳十几下 / 两秒内多件事」的密集交互，再多纯属浪费内存和落盘 IO。
+EVENTS: deque = deque(maxlen=40)
+CMDS: deque = deque(maxlen=20)
 _seq = 0
 _last: Dict[str, Any] = {}
 _save_at = 0.0
@@ -34,9 +36,9 @@ def _load():
     try:
         with open(STATE_FILE, encoding="utf-8") as f:
             d = json.load(f)
-        for e in d.get("events", [])[-120:]:
+        for e in d.get("events", [])[-EVENTS.maxlen:]:
             EVENTS.append(e)
-        for c in d.get("cmds", [])[-30:]:
+        for c in d.get("cmds", [])[-CMDS.maxlen:]:
             CMDS.append(c)
         _seq = int(d.get("seq", 0))
     except Exception:
@@ -53,7 +55,7 @@ def _save(force: bool = False):
     try:
         with open(STATE_FILE, "w", encoding="utf-8") as f:
             json.dump(
-                {"events": list(EVENTS)[-120:], "cmds": list(CMDS)[-30:], "seq": _seq},
+                {"events": list(EVENTS), "cmds": list(CMDS), "seq": _seq},
                 f, ensure_ascii=False,
             )
     except Exception:
@@ -88,9 +90,10 @@ async def event(req: Request):
 
 
 @app.get("/events")
-def events(limit: int = 20):
-    """大脑来读：她刚被怎么对待了。"""
-    return {"events": list(EVENTS)[-max(1, min(limit, 300)):]}
+def events(limit: int = 10):
+    """大脑来读：她刚被怎么对待了。默认给最近 10 条就够。"""
+    n = max(1, min(limit, EVENTS.maxlen or 1))
+    return {"events": list(EVENTS)[-n:]}
 
 
 @app.post("/cmd")

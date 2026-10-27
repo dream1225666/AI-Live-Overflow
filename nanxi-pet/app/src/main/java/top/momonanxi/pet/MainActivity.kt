@@ -76,26 +76,13 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(52)
         ).apply { topMargin = dp(12) })
 
-        val btnUsage = Button(this).apply {
-            text = "④ 允许它看见你在用什么 App"
-            textSize = 13f
-            setOnClickListener {
-                try {
-                    startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-                } catch (_: Throwable) {
-                }
-            }
-        }
-        root.addView(btnUsage, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, dp(48)
-        ).apply { topMargin = dp(10) })
-
         root.addView(TextView(this).apply {
             textSize = 12f
             gravity = Gravity.CENTER
             setPadding(0, dp(28), 0, 0)
             text = "长按 = 害羞　连戳 = 生气　双击 = 说话\n" +
-                "拖到屏幕边缘会贴上去探头"
+                "拖到屏幕边缘会贴上去探头\n\n" +
+                "它不查你在用什么 app——那些交给墨墨去问"
         })
 
         setContentView(root)
