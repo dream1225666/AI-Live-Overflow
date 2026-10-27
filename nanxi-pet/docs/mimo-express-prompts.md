@@ -104,7 +104,7 @@ background, nothing else. No text, no shadow, no glow.
 
 ## 5 · shy　害羞
 
-豆豆眼往下看，腮红加深，嘴是小波浪。头不动。
+眼睛**完全不动**，只有瞳孔偏向下方，嘴抿成一条细短的线。**不画腮红。** 头不动。
 
 ```
 Same character as the reference image — same face shape, same messy black side-parted hair,
