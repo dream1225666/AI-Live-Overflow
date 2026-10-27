@@ -156,24 +156,15 @@ background, nothing else. No text, no shadow, no glow.
 
 ---
 
-## 7 · sleep　睡着
+## 7 · sleep　睡着 ✗ 不用生成
 
-眼睛闭成两条向下弯的弧，嘴微张成小圆。头不动。
+**直接复用 `idle_b`（闭眼那张）。** 闭眼帧本身就是睡着的样子，只靠极慢的呼吸就够区分：
 
 ```
-Same character as the reference image — same face shape, same messy black side-parted hair,
-same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
-Head faces straight forward, no tilt, no nodding off to the side.
-
-Change only the expression: peacefully asleep. Both eyes are closed and drawn as two soft
-downward-curving arcs, with no iris visible. His mouth is slightly open in a small relaxed oval.
-Shoulders a touch lower than the reference.
-
-Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
-no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
-do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
-background, nothing else. No text, no shadow, no glow.
+帧序 = [闭眼, 闭眼下沉1px, 闭眼下沉2px, 闭眼下沉1px]  @ 1.5fps
 ```
+
+已经做好了（`mimo_sleep.png`），省一张图。
 
 ---
 
@@ -275,3 +266,128 @@ background, nothing else. No text, no shadow, no glow.
 生成 `mimo_<名字>.png` → 更新预览页 → 一起打进 APK。
 
 **某张脸型变了 / 头发变了 / 头歪了 / 构图移了，直接重出那张，别发给我。**
+
+---
+
+## 还需要哪些动作（表情之外）
+
+表情只解决「脸上的事」。桌宠要像活的，还有**身体的事**——而且这部分比表情更影响观感。
+
+### 必须的（缺了会明显穿帮）
+
+| 动作 | 为什么必须 | 要几张 |
+|---|---|---|
+| `drag` **被拎起来** | **现在拖他的时候还是站着的**，像拽一块纸板。这是目前最明显的缺口 | 1 |
+| `fling` **被甩飞** | 甩出去要有姿态，不能平移 | 2 |
+| `wake` **醒来** | 从睡着切到任何状态，没有过渡就是硬切 | 1 |
+| `poke` **被戳** | 最基础的交互反馈，戳一下总得有反应 | 2 |
+
+### 有趣但不急的
+
+| 动作 | 效果 | 备注 |
+|---|---|---|
+| `look` 东张西望 | 空闲时随机做，立刻显得在「看着你」 | 只动瞳孔，1 张 |
+| `yawn` 打哈欠 | 深夜时段专用，配合睡眠状态 | 和 wake 可以共用 |
+| `dizzy` 晕 | 被连戳太多时 | 1 张，叉眼 |
+| `typing` 敲键盘 | AI 干活时切换 | **Q 版手太短，敲键盘很难画**。建议改成「抱着一个小方块」，比敲键盘好表达 |
+| `dock` 贴边探头 | 拖到屏幕边缘 | 需要专门的斜靠姿态 |
+
+### 不用生成的
+
+这些我用代码就能做，别浪费额度：
+
+- **眨眼** —— `idle_b` 插一帧，已在用
+- **睡眠** —— `idle_b` + 1~2px 慢呼吸，已做好
+- **呼吸** —— `idle_a` 上下位移
+- **落地** —— 位移 + `fling` 的最后一帧
+
+---
+
+## 建议的生成顺序
+
+**第一批（4 张）**：`drag` → `fling` → `wake` → `surprise`
+身体动作先补齐，这比多十种表情更能让人觉得「这是个活物」。
+
+**第二批（4 张）**：`happy` → `annoyed` → `shy` → `sad`
+常用的四种情绪。
+
+**第三批（看心情）**：`angry`（带青筋）→ `think` → `tired` → `dizzy`
+
+---
+
+## 第一批的四段 prompt
+
+### drag · 被拎起来
+
+**目前最明显的缺口**——现在拖他的时候身体还是站着的，像拽一块纸板。
+
+```
+Same character as the reference image — same face shape, same messy black side-parted hair,
+same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
+
+Change only the pose: he is being lifted off the ground, hanging from the scruff of his collar.
+His body hangs straight down and slightly limp, both arms dangling loosely at his sides, both legs
+hanging with the feet pointing down. The hem of his top is lifted a little by the movement.
+His expression stays the same neutral half-lidded look — mildly inconvenienced, not scared.
+
+Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
+no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
+do not re-crop, do not zoom in or out. Plain solid magenta (#FF00FF) background, nothing else.
+No text, no shadow, no glow, no motion lines.
+```
+
+### fling · 被甩出去
+
+```
+Same character as the reference image — same face shape, same messy black side-parted hair,
+same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+
+Change only the pose: he is being thrown through the air sideways. His whole body is tilted about
+30 degrees away from vertical, arms and legs trailing behind the direction of the throw, hair
+pushed back a little. Expression: eyes wider than usual, mouth slightly open, caught off guard.
+Do not add motion lines or speed streaks — they turn into noise at this size.
+
+Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
+no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
+do not re-crop, do not zoom in or out. Plain solid magenta (#FF00FF) background, nothing else.
+No text, no shadow, no glow.
+```
+
+### wake · 醒来
+
+```
+Same character as the reference image — same face shape, same messy black side-parted hair,
+same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
+
+Change only the pose and expression: he has just snapped awake. Both eyes are now open — wider than
+his usual half-closed state, but with the eyelids still a little heavy. Brows slightly lifted.
+Mouth a small open oval. His body is pulled up straight with the shoulders raised a touch, as if he
+was caught slouching. Still a bit dazed, not alarmed.
+
+Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
+no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
+do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
+background, nothing else. No text, no shadow, no glow.
+```
+
+### surprise · 惊讶（兼当 poke 用）
+
+戳一下的反应就用这张，不用单独出 `poke`。
+
+```
+Same character as the reference image — same face shape, same messy black side-parted hair,
+same dark charcoal high-neck top, same slim proportions, same colors. Do not redesign.
+Head faces straight forward, no tilt.
+
+Change only the pose and expression: he has just been poked and is startled. His narrow eyes are
+opened wider than usual, showing more of the blue-grey iris, brows lifted, mouth a small open oval.
+His shoulders are pulled up and slightly hunched, body leaning back a little, as if reacting to
+something touching him.
+
+Pixel art, chunky visible square pixels, limited 8-color palette, hard edges, no anti-aliasing,
+no gradients, no blur. Same framing, same scale, same position in the canvas as the reference —
+do not re-crop, do not zoom in or out. Feet flat at the bottom. Plain solid magenta (#FF00FF)
+background, nothing else. No text, no shadow, no glow.
+```
