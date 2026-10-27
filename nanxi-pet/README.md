@@ -47,24 +47,31 @@ server/
 `anim` 取值见 `assets/pet.html` 里的 `SPR` 表（`happy` `shy` `angry` `sad` `think` `typing` `fling` `sleep` …），
 `ms=0` 表示一直保持到下一条。
 
-## 编译
+## 下载安装
 
-本机不装 Android SDK，靠 GitHub Actions：
+APK 直链（每次 push 自动重建、覆盖同一个地址）：
 
-```bash
-git init && git add -A && git commit -m "init"
-git remote add origin git@github.com:<你>/<仓库>.git
-git push -u origin main
+```
+https://github.com/dream1225666/AI-Live-Overflow/releases/download/latest-build/app-debug.apk
 ```
 
-push 后去 Actions 页下载 `nanxi-pet-debug` artifact。
+装好后：桌面点「南兮」→ 授予**悬浮窗权限** → 点「让南兮出来」。
+
+## 编译
+
+本机不装 Android SDK，靠 GitHub Actions。工程在 `nanxi-pet/` 子目录，
+workflow 在**仓库根目录**的 `.github/workflows/build-apk.yml`（GitHub 只认根目录），
+用 `defaults.run.working-directory: nanxi-pet` 指定构建目录。
+
+push 后自动出 APK 并发布到 Release（tag `latest-build`），也可以在 Actions 页下 artifact。
 
 ## 已知状态
 
 - 渲染层已本地验证：canvas 32×32 → 窗口内 320×320，`transform: none`，螃蟹正常绘制。
 - 后端已端到端跑通：上报 → 读 → 下指令 → 轮询取 → 不重复消费。
-- **整个工程还没真编译过**（本机无 Android SDK，VPS 1.6G 内存跑不动 Gradle）。第一次 CI 可能要修一两个编译错误。
-- 手势视觉反馈由 `ClawdHost` 内部直接调 `window.clawd(...)` 完成，触摸方已经能用；上报后端是为了让大脑知道。
+- **CI 已构建成功**（run 40445651754），APK 3.2MB。
+- 尚未在真机上安装验证。手势视觉反馈由 `ClawdHost` 内部直接调 `window.clawd(...)` 完成；
+  上报后端是为了让大脑知道发生了什么。
 
 ## 协议
 
